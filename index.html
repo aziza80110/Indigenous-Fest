@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台灣原住民祭典規劃</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 使用 FontAwesome 作為圖示 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入 Marked.js 解析 Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#9E3A26', // 陶土紅
+                        'primary-dark': '#7A2C1D',
+                        forest: '#2D5A43',  // 大地綠
+                        gold: '#DDA15E',    // 小米金黃
+                        stone: {
+                            50: '#fafaf9',
+                            900: '#1c1917',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Microsoft JhengHei"', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #fafaf9;
+            color: #333;
+        }
+        /* 自訂捲軸 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #9E3A26;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #7A2C1D;
+        }
+        /* Markdown 樣式 */
+        .markdown-body h3 { font-size: 1.25rem; font-weight: bold; margin-top: 1rem; color: #9E3A26; }
+        .markdown-body ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+        .markdown-body p { margin-bottom: 0.5rem; }
+        .markdown-body strong { color: #2D5A43; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 載入動畫 */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #9E3A26;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-stone-50 min-h-screen flex flex-col">
+
+    <!-- 導覽列 (Navbar) -->
+    <nav class="bg-primary text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl mr-2">🔮</span>
+                    <span class="font-bold text-xl tracking-wider">台灣原住民祭典規劃</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="user-status" class="text-sm opacity-80"><i class="fas fa-spinner fa-spin"></i> 連線中...</span>
+                    <!-- 隱藏的登出按鈕，視需求實作 -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主視覺 Hero 區塊 -->
+    <div class="bg-forest text-white py-12 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTAgMGg0MHY0MEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0yMCAyMGwyMCAyME00MCAwbC0yMCAyME0yMCAwbDIwIDIwTTAgMjBsMjAtMjBMMCAwbTIwIDQwbDIwLTIwTTAgNDBsMjAtMjBMMCAyMG0wIDIwbDIwLTIwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iMC41Ii8+PC9zdmc+')]"></div>
+        <div class="max-w-7xl mx-auto px-4 relative z-10 text-center">
+            <h1 class="text-3xl md:text-5xl font-bold mb-4 shadow-sm">探索部落之美，尊重歲時祭儀</h1>
+            <p class="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto">一站式文化觀光知識庫與 AI 行程管家，打造屬於您的深度文化之旅。</p>
+            
+            <!-- 導覽 Tabs -->
+            <div class="flex flex-wrap justify-center gap-2 md:gap-4 mt-8">
+                <button onclick="switchTab('encyclopedia')" id="tab-btn-encyclopedia" class="tab-btn px-6 py-3 rounded-full bg-white text-forest font-bold shadow-md hover:bg-gray-100 transition-all">
+                    <i class="fas fa-book-open mr-2"></i>17族百科
+                </button>
+                <button onclick="switchTab('calendar')" id="tab-btn-calendar" class="tab-btn px-6 py-3 rounded-full bg-transparent border border-white text-white font-bold hover:bg-white/10 transition-all">
+                    <i class="fas fa-calendar-alt mr-2"></i>祭典行事曆
+                </button>
+                <button onclick="switchTab('ai-planner')" id="tab-btn-ai-planner" class="tab-btn px-6 py-3 rounded-full bg-transparent border border-white text-white font-bold hover:bg-white/10 transition-all">
+                    <i class="fas fa-robot mr-2"></i>AI 行程管家
+                </button>
+                <button onclick="switchTab('weather')" id="tab-btn-weather" class="tab-btn px-6 py-3 rounded-full bg-transparent border border-white text-white font-bold hover:bg-white/10 transition-all">
+                    <i class="fas fa-cloud-sun-rain mr-2"></i>氣象與機能
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要內容區 -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
+        <!-- 全域訊息提示區 -->
+        <div id="message-box" class="hidden mb-6 p-4 rounded-lg shadow-sm border-l-4 transition-all"></div>
+
+        <!-- Tab 1: 17 族百科與禁忌 -->
+        <section id="tab-encyclopedia" class="tab-content active">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-primary inline-block pb-2">台灣 17 原住民族圖鑑</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tribes-container">
+                <!-- Tribe Cards injected via JS -->
+            </div>
+        </section>
+
+        <!-- Tab 2: 歲時祭典行事曆 -->
+        <section id="tab-calendar" class="tab-content">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-primary inline-block pb-2">歲時祭儀行事曆</h2>
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <div class="relative border-l-2 border-gold ml-3" id="festivals-timeline">
+                    <!-- Timeline items injected via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 3: Gemini AI 行程管家 -->
+        <section id="tab-ai-planner" class="tab-content">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-primary inline-block pb-2">Gemini AI 行程自訂規劃</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 輸入表單 -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 lg:col-span-1 border border-gray-100 h-fit">
+                    <h3 class="text-lg font-bold text-primary mb-4"><i class="fas fa-sliders-h mr-2"></i>設定您的旅程</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">出發城市</label>
+                            <input type="text" id="ai-origin" placeholder="例如：台北市、高雄市" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">旅遊天數</label>
+                            <select id="ai-days" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none">
+                                <option value="1">1 天 (單日體驗)</option>
+                                <option value="2">2 天 (週末輕旅)</option>
+                                <option value="3" selected>3 天 (深度漫遊)</option>
+                                <option value="4">4 天 (部落探索)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">目標族群/地區</label>
+                            <select id="ai-tribe" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none">
+                                <option value="阿美族 (花東地區)">阿美族 (花東地區)</option>
+                                <option value="排灣族 (屏東/台東)">排灣族 (屏東/台東)</option>
+                                <option value="泰雅族 (北部/中部山區)">泰雅族 (北部/中部山區)</option>
+                                <option value="布農族 (中央山脈周邊)">布農族 (中央山脈周邊)</option>
+                                <option value="魯凱族 (屏東/台東/高雄)">魯凱族 (屏東/台東/高雄)</option>
+                                <option value="鄒族 (嘉義阿里山)">鄒族 (嘉義阿里山)</option>
+                                <option value="達悟族 (蘭嶼)">達悟族 (蘭嶼)</option>
+                                <option value="不指定，請 AI 推薦">不指定，請 AI 推薦</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">同行型態與偏好</label>
+                            <input type="text" id="ai-preference" placeholder="例如：家庭親子旅遊、喜歡大自然、文史愛好者" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none">
+                        </div>
+                        <button id="btn-generate-ai" class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-lg transition-colors mt-4 flex justify-center items-center">
+                            <i class="fas fa-magic mr-2"></i> 開始規劃行程
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 產出結果區 -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 lg:col-span-2 border border-gray-100 min-h-[400px] flex flex-col">
+                    <div class="flex justify-between items-center mb-4 border-b pb-2">
+                        <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-map-marked-alt mr-2 text-forest"></i>專屬行程提案</h3>
+                        <button id="btn-save-itinerary" class="hidden text-sm bg-forest hover:bg-green-800 text-white px-3 py-1 rounded-md transition-colors">
+                            <i class="fas fa-cloud-download-alt mr-1"></i>收藏至雲端
+                        </button>
+                    </div>
+                    
+                    <div id="ai-result-container" class="flex-grow overflow-y-auto pr-2 relative">
+                        <!-- 預設狀態 -->
+                        <div id="ai-empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                            <i class="fas fa-compass text-4xl mb-3 opacity-50"></i>
+                            <p>設定左側條件，讓 AI 為您規劃專屬文化之旅</p>
+                        </div>
+                        
+                        <!-- 載入中 -->
+                        <div id="ai-loading" class="hidden absolute inset-0 flex flex-col items-center justify-center text-primary">
+                            <div class="loader mb-4"></div>
+                            <p class="font-medium animate-pulse">Gemini AI 正在編排您的專屬遊程與禁忌指南...</p>
+                        </div>
+                        
+                        <!-- 結果呈現 -->
+                        <div id="ai-content" class="markdown-body hidden text-gray-700 leading-relaxed">
+                            <!-- Markdown 解析內容 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 收藏清單區塊 -->
+            <div class="mt-12" id="saved-itineraries-section">
+                <h3 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-bookmark mr-2 text-gold"></i>我的雲端收藏行程</h3>
+                <div id="saved-itineraries-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <p class="text-gray-500 text-sm italic col-span-full">尚無收藏行程。登入後即可在此查看您儲存的 AI 規劃紀錄。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 4: 氣象與部落生活機能 -->
+        <section id="tab-weather" class="tab-content">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-primary inline-block pb-2">部落微氣候與生活機能</h2>
+            
+            <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg mb-6 flex items-start">
+                <i class="fas fa-info-circle mt-1 mr-3 text-blue-500"></i>
+                <p class="text-sm">山區氣候瞬息萬變，建議出發前再次確認天氣。以下數據為模擬氣象署 (CWA) 資訊看板。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="weather-container">
+                <!-- Weather Cards injected via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 頁尾 (Footer) -->
+    <footer class="bg-stone-900 text-stone-400 py-8 text-center text-sm border-t-4 border-primary">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="mb-2"><a href="#" class="hover:text-white transition-colors">原住民族參訪倫理公約</a> | <a href="#" class="hover:text-white transition-colors">隱私權政策</a></p>
+            <p>© 2020 TonyStudio (TONY 楊文澤顧問). All rights reserved.</p>
+            <p class="mt-2 text-xs opacity-50">Powered by Google Gemini & Firebase</p>
+        </div>
+    </footer>
+
+    <!-- Firebase & 應用程式邏輯 -->
+    <script type="module">
+        // ----------------------------------------------------------------------
+        // 1. Firebase 初始化與認證 (遵循 Serverless 架構限制)
+        // ----------------------------------------------------------------------
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // 環境變數取得 (平台提供)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'demo-app-id';
+        
+        // 使用者提供的 Firebase 設定
+        const userProvidedConfig = {
+            apiKey: "AIzaSyAXnDhxZfA6RYA0mLQXUEs1Iq5JnNHN_20",
+            authDomain: "taiwan-indigenous-festivals.firebaseapp.com",
+            projectId: "taiwan-indigenous-festivals",
+            storageBucket: "taiwan-indigenous-festivals.firebasestorage.app",
+            messagingSenderId: "430162411739",
+            appId: "1:430162411739:web:64c31838c2bd6c8632ccfe",
+            measurementId: "G-VTSCTM8Y9C"
+        };
+        
+        const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+        let firebaseConfig;
+        
+        try {
+            // 優先使用環境變數，若無或為空則使用指定的 userProvidedConfig
+            firebaseConfig = firebaseConfigStr && firebaseConfigStr !== '{}' ? JSON.parse(firebaseConfigStr) : userProvidedConfig;
+        } catch (e) {
+            console.warn("無法解析環境變數的 Firebase Config，將使用預設設定。");
+            firebaseConfig = userProvidedConfig;
+        }
+
+        let app, db, auth;
+        let currentUser = null;
+
+        if (Object.keys(firebaseConfig).length > 0) {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // 認證流程：優先使用提供的 Token，否則匿名登入
+            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            
+            if (initialAuthToken) {
+                signInWithCustomToken(auth, initialAuthToken).catch(err => {
+                    console.error("Custom Token Login Failed:", err);
+                    fallbackToAnonymous();
+                });
+            } else {
+                fallbackToAnonymous();
+            }
+
+            function fallbackToAnonymous() {
+                signInAnonymously(auth).catch(error => {
+                    console.error("Anonymous Login Failed:", error);
+                    updateUserStatus("未登入 (離線模式)");
+                });
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    updateUserStatus(`已登入 (UID: ${user.uid.substring(0, 6)}...)`);
+                    loadSavedItineraries();
+                } else {
+                    currentUser = null;
+                    updateUserStatus("未登入");
+                }
+            });
+        } else {
+            updateUserStatus("純前端展示模式");
+        }
+
+        // ----------------------------------------------------------------------
+        // 2. Mock 靜態資料結構 (代替完整 DB 以利單一檔案運作)
+        // ----------------------------------------------------------------------
+        const MOCK_TRIBES = [
+            {
+                id: "amis", name: "阿美族", romanizedName: "Amis / Pangcah",
+                regions: ["花蓮縣", "臺東縣", "屏東縣"],
+                summary: "母系社會，以豐年祭(Ilisin)、年齡階級組織及優美的歌舞聞名。為台灣人口最多的原住民族。",
+                culturalTaboos: [
+                    "豐年祭部分神聖祭儀（如迎靈）嚴禁女性及外人靠近或觸摸祭具。",
+                    "進入部落請勿隨意拍攝私人住宅或未經同意拍攝族人特寫。",
+                    "遵守部落場地規劃，勿跨越拉起的封鎖線。"
+                ],
+                iconSymbol: "☀️", color: "border-red-500"
+            },
+            {
+                id: "paiwan", name: "排灣族", romanizedName: "Paiwan",
+                regions: ["屏東縣", "臺東縣"],
+                summary: "擁有嚴謹的階級制度，以百步蛇圖騰、石板屋、琉璃珠與精緻木雕工藝文化聞名。",
+                culturalTaboos: [
+                    "未經頭目或耆老許可，切勿觸摸石板屋內之祖靈柱。",
+                    "祭場神聖區域女性或外人依祭典規範有進出限制。",
+                    "百步蛇為神聖象徵，切勿語出不敬。"
+                ],
+                iconSymbol: "🐍", color: "border-gray-800"
+            },
+            {
+                id: "tayal", name: "泰雅族", romanizedName: "Atayal / Tayal",
+                regions: ["新北市", "桃園市", "新竹縣", "苗栗縣", "臺中市", "宜蘭縣"],
+                summary: "以 GAGA 信仰、紋面文化及精湛的編織技術(苧麻編織)著稱，傳統居屋多半穴居或竹屋。",
+                culturalTaboos: [
+                    "祖靈祭(Smahet)多屬不對外開放之內部祭儀，請勿強求參與。",
+                    "進入獵區或山林，禁止喧嘩及隨意破壞植物，需抱持敬畏之心。",
+                    "不可隨意觸摸獵具或男性的武器。"
+                ],
+                iconSymbol: "🧶", color: "border-red-700"
+            },
+            {
+                id: "bunun", name: "布農族", romanizedName: "Bunun",
+                regions: ["南投縣", "花蓮縣", "臺東縣", "高雄市"],
+                summary: "典型的高山族群，以八部合音(Pasibutbut)、打耳祭(Malahtangia)及狩獵文化聞名世界。",
+                culturalTaboos: [
+                    "祭典期間嚴禁孕婦、守喪者參與或靠近特定儀式。",
+                    "打耳祭射箭場地嚴禁非相關人員進入，尤忌隨意觸摸弓箭。",
+                    "入山前有嚴格的夢占與鳥占禁忌，訪客應尊重部落決定。"
+                ],
+                iconSymbol: "🏹", color: "border-green-700"
+            },
+            {
+                id: "tao", name: "達悟族", romanizedName: "Tao / Yami",
+                regions: ["臺東縣蘭嶼鄉"],
+                summary: "台灣唯一海洋原住民族，以飛魚祭、拼板舟及半地下屋文化為特色，展現與海洋共生的智慧。",
+                culturalTaboos: [
+                    "飛魚祭期間嚴禁向海拋擲石頭、下水遊玩或觸摸拼板舟。",
+                    "未經同意絕對禁止拍攝拼板舟內部及族人。",
+                    "橘子被視為不吉利的水果，請勿帶至海邊或祭典現場。"
+                ],
+                iconSymbol: "🐟", color: "border-blue-500"
+            },
+             {
+                id: "siraya", name: "西拉雅族", romanizedName: "Siraya",
+                regions: ["臺南市", "花蓮縣(部分)"],
+                summary: "台灣平埔族群中人口最多者，以阿立祖信仰、夜祭及獨特的公廨建築文化傳承至今。",
+                culturalTaboos: [
+                    "夜祭進行時，需保持肅穆，禁止喧嘩及隨意穿越祭場。",
+                    "公廨為神聖場所，未經允許不得隨意進入或觸碰祭器(如向水、祀壺)。",
+                    "尊重族人正名運動，以『西拉雅族』稱呼，避免使用貶抑詞彙。"
+                ],
+                iconSymbol: "🏺", color: "border-orange-500"
+            }
+        ];
+
+        const MOCK_FESTIVALS = [
+            {
+                tribe: "阿美族", name: "馬太鞍部落豐年祭 (Ilisin)", date: "每年 8 月中旬", location: "花蓮縣光復鄉",
+                status: "scheduled", isPublic: true,
+                desc: "感恩五穀豐收，迎靈、宴靈、送靈儀式。最後一天「情人之夜」常開放遊客共舞。"
+            },
+            {
+                tribe: "排灣族", name: "五年祭 (Maljeveq)", date: "每五年一次 (約 10-11 月)", location: "屏東縣來義鄉 (古樓等部落)",
+                status: "scheduled", isPublic: true,
+                desc: "恭迎大武山祖靈。最著名為「刺球」儀式，外賓請嚴守警戒線。"
+            },
+            {
+                tribe: "布農族", name: "打耳祭 (Malahtangia)", date: "每年 4-5 月", location: "南投/花蓮/台東各部落",
+                status: "ongoing", isPublic: false,
+                desc: "男性專屬的狩獵祭儀，傳承射箭技藝。多數部落僅限族人參與，謝絕遊客。"
+            },
+            {
+                tribe: "達悟族", name: "飛魚祭 (Rayon)", date: "每年 2-6 月", location: "台東縣蘭嶼鄉",
+                status: "scheduled", isPublic: true,
+                desc: "包含招魚祭、收藏祭等多階段。期間有嚴格海洋禁忌，遊客務必遵守當地規範。"
+            },
+            {
+                tribe: "西拉雅族", name: "吉貝耍夜祭", date: "農曆 9 月 4 日至 5 日", location: "台南市東山區",
+                status: "scheduled", isPublic: true,
+                desc: "祭拜阿立母，感恩庇佑。包含拜豬還願及牽曲敬神儀式。"
+            }
+        ];
+
+        const MOCK_WEATHER = [
+            { location: "阿里山鄉 (鄒族)", temp: "14°C - 20°C", rain: "60%", warning: "午後雷陣雨，請攜帶雨具", type: "rain" },
+            { location: "蘭嶼鄉 (達悟族)", temp: "26°C - 30°C", rain: "10%", warning: "紫外線過量，注意防曬", type: "sun" },
+            { location: "來義鄉 (排灣族)", temp: "22°C - 28°C", rain: "30%", warning: "山區路況多變，注意行車安全", type: "cloud" }
+        ];
+
+        // ----------------------------------------------------------------------
+        // 3. UI 渲染邏輯
+        // ----------------------------------------------------------------------
+
+        // 顯示訊息框
+        window.showMessage = (msg, type = 'info') => {
+            const box = document.getElementById('message-box');
+            box.innerHTML = msg;
+            box.className = `mb-6 p-4 rounded-lg shadow-sm border-l-4 transition-all block`;
+            
+            if (type === 'error') {
+                box.classList.add('bg-red-50', 'border-red-500', 'text-red-700');
+            } else if (type === 'success') {
+                box.classList.add('bg-green-50', 'border-green-500', 'text-green-700');
+            } else {
+                box.classList.add('bg-blue-50', 'border-blue-500', 'text-blue-700');
+            }
+            
+            setTimeout(() => { box.classList.add('hidden'); box.classList.remove('block'); }, 5000);
+        };
+
+        // 更新使用者狀態
+        function updateUserStatus(text) {
+            document.getElementById('user-status').innerHTML = text;
+        }
+
+        // 切換 Tab
+        window.switchTab = (tabId) => {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-white', 'text-forest', 'shadow-md');
+                el.classList.add('bg-transparent', 'border', 'border-white', 'text-white');
+            });
+            
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+            activeBtn.classList.remove('bg-transparent', 'border', 'border-white', 'text-white');
+            activeBtn.classList.add('bg-white', 'text-forest', 'shadow-md');
+        };
+
+        // 渲染部落圖鑑
+        function renderTribes() {
+            const container = document.getElementById('tribes-container');
+            let html = '';
+            MOCK_TRIBES.forEach(tribe => {
+                const taboosHtml = tribe.culturalTaboos.map(t => `<li class="text-sm mb-1 text-gray-600"><i class="fas fa-exclamation-triangle text-red-400 mr-1 text-xs"></i>${t}</li>`).join('');
+                html += `
+                    <div class="bg-white rounded-xl shadow-sm border-t-4 ${tribe.color} overflow-hidden hover:shadow-md transition-shadow">
+                        <div class="p-5 border-b border-gray-100 bg-stone-50 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800">${tribe.name}</h3>
+                                <p class="text-xs text-gray-500">${tribe.romanizedName}</p>
+                            </div>
+                            <span class="text-3xl">${tribe.iconSymbol}</span>
+                        </div>
+                        <div class="p-5">
+                            <p class="text-sm text-gray-700 mb-4 line-clamp-3">${tribe.summary}</p>
+                            <div class="bg-red-50 p-3 rounded-lg border border-red-100">
+                                <h4 class="text-sm font-bold text-red-800 mb-2">文化禁忌與參訪倫理</h4>
+                                <ul class="pl-1">${taboosHtml}</ul>
+                            </div>
+                            <div class="mt-4 text-xs text-gray-500">
+                                <i class="fas fa-map-marker-alt mr-1"></i> 主要分佈: ${tribe.regions.join(', ')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // 渲染祭典行事曆
+        function renderFestivals() {
+            const container = document.getElementById('festivals-timeline');
+            let html = '';
+            MOCK_FESTIVALS.forEach(fest => {
+                const statusColor = fest.status === 'ongoing' ? 'bg-green-500' : 'bg-blue-400';
+                const statusText = fest.status === 'ongoing' ? '進行中' : '即將到來';
+                const publicBadge = fest.isPublic 
+                    ? `<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full border border-green-200">開放觀禮</span>`
+                    : `<span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full border border-red-200">內部儀式謝絕外客</span>`;
+
+                html += `
+                    <div class="relative pl-6 mb-8 last:mb-0">
+                        <!-- Timeline Dot -->
+                        <div class="absolute left-[-5px] top-1 w-3 h-3 rounded-full ${statusColor} border-2 border-white shadow"></div>
+                        
+                        <div class="bg-stone-50 rounded-xl p-4 border border-gray-100 hover:shadow-md transition-shadow">
+                            <div class="flex flex-wrap justify-between items-start mb-2">
+                                <div>
+                                    <span class="text-xs font-bold text-primary mr-2">${fest.tribe}</span>
+                                    <h3 class="text-lg font-bold text-gray-800 inline">${fest.name}</h3>
+                                </div>
+                                <div class="mt-1 sm:mt-0 space-x-2">
+                                    <span class="text-xs text-gray-500"><i class="far fa-clock mr-1"></i>${statusText}</span>
+                                    ${publicBadge}
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2"><i class="fas fa-calendar-day mr-1 opacity-50"></i>${fest.date}</p>
+                            <p class="text-sm text-gray-600 mb-3"><i class="fas fa-map-pin mr-1 opacity-50"></i>${fest.location}</p>
+                            <p class="text-sm text-gray-700 bg-white p-3 rounded border border-gray-200">${fest.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // 渲染氣象預報
+        function renderWeather() {
+            const container = document.getElementById('weather-container');
+            let html = '';
+            MOCK_WEATHER.forEach(w => {
+                let icon = '';
+                let colorClass = '';
+                if(w.type === 'rain') { icon = 'fa-cloud-showers-heavy'; colorClass = 'text-blue-500'; }
+                else if(w.type === 'sun') { icon = 'fa-sun'; colorClass = 'text-orange-500'; }
+                else { icon = 'fa-cloud'; colorClass = 'text-gray-500'; }
+
+                html += `
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col items-center text-center">
+                        <h3 class="font-bold text-gray-800 mb-2">${w.location}</h3>
+                        <i class="fas ${icon} text-4xl ${colorClass} my-3"></i>
+                        <div class="text-2xl font-bold text-gray-800 mb-1">${w.temp}</div>
+                        <div class="text-sm text-gray-500 mb-4">降雨機率: <span class="font-bold">${w.rain}</span></div>
+                        <div class="bg-stone-100 text-xs text-gray-700 p-2 rounded w-full">
+                            <i class="fas fa-bell text-gold mr-1"></i> ${w.warning}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // ----------------------------------------------------------------------
+        // 4. Gemini AI 行程生成邏輯
+        // ----------------------------------------------------------------------
+        let currentGeneratedMarkdown = "";
+
+        document.getElementById('btn-generate-ai').addEventListener('click', async () => {
+            const origin = document.getElementById('ai-origin').value.trim() || '台北市';
+            const days = document.getElementById('ai-days').value;
+            const tribe = document.getElementById('ai-tribe').value;
+            const preference = document.getElementById('ai-preference').value.trim() || '無特定偏好';
+
+            const btn = document.getElementById('btn-generate-ai');
+            const emptyState = document.getElementById('ai-empty-state');
+            const loadingState = document.getElementById('ai-loading');
+            const contentState = document.getElementById('ai-content');
+            const saveBtn = document.getElementById('btn-save-itinerary');
+
+            // UI 狀態切換
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 規劃中...';
+            emptyState.classList.add('hidden');
+            contentState.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+            saveBtn.classList.add('hidden');
+
+            const prompt = `
+                我是一個熱愛文化的旅客，計畫從「${origin}」出發，進行「${days}」天的台灣原住民部落旅遊，
+                主要探索目標是「${tribe}」，我的同行型態與偏好為：「${preference}」。
+                請幫我規劃一份具備深度的旅遊行程。
+                
+                內容必須包含以下結構 (請用 Markdown 語法)：
+                1. 行程總覽 (簡短標題與摘要)
+                2. 每日時間軸 (Day 1, Day 2...)：包含交通建議、推薦景點。
+                3. 食宿推薦：在地風味餐飲與特色合法住宿建議。
+                4. **⚠️ 文化禁忌與注意事項 (極重要)**：請針對該族群列出至少 3 點參訪時必須遵守的禁忌或禮儀。
+                
+                請以繁體中文回覆，語氣專業且尊重文化。不要包含任何 Markdown code block 反引號 (\`\`\`markdown) 包覆，直接輸出 Markdown 內容。
+            `;
+
+            try {
+                // 使用 Gemini API (API Key 由系統自動帶入)
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: {
+                            temperature: 0.7,
+                            topP: 0.9,
+                        }
+                    })
+                });
+
+                if (!response.ok) throw new Error(`API 請求失敗狀態碼: ${response.status}`);
+                
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
+                    currentGeneratedMarkdown = data.candidates[0].content.parts[0].text;
+                    
+                    // 渲染 Markdown
+                    contentState.innerHTML = marked.parse(currentGeneratedMarkdown);
+                    
+                    loadingState.classList.add('hidden');
+                    contentState.classList.remove('hidden');
+                    if (currentUser) {
+                        saveBtn.classList.remove('hidden'); // 登入才顯示儲存按鈕
+                    }
+                } else {
+                    throw new Error("API 回傳格式異常");
+                }
+
+            } catch (error) {
+                console.error("Gemini AI Error:", error);
+                loadingState.classList.add('hidden');
+                
+                // Fallback 機制
+                contentState.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg">
+                        <h3 class="font-bold mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>AI 祭儀管家目前繁忙</h3>
+                        <p class="text-sm mb-4">無法取得即時生成結果，已為您載入推薦的備用行程。</p>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="font-bold text-lg text-primary">經典推薦：${tribe} ${days}日遊</h3>
+                        <p>請前往首頁【17族百科】查閱相關禁忌，並利用【祭典行事曆】確認活動開放狀態。</p>
+                        <p class="text-gray-500 text-sm mt-2">（此為系統自動降級回應）</p>
+                    </div>
+                `;
+                contentState.classList.remove('hidden');
+                showMessage("AI 生成失敗，已切換至備用模式", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic mr-2"></i> 重新規劃';
+            }
+        });
+
+        // ----------------------------------------------------------------------
+        // 5. Firestore 雲端收藏邏輯 (遵循 RULE 1, RULE 2, RULE 3)
+        // ----------------------------------------------------------------------
+        document.getElementById('btn-save-itinerary').addEventListener('click', async () => {
+            if (!currentUser || !db) {
+                showMessage("請先登入才能收藏行程", "error");
+                return;
+            }
+
+            if (!currentGeneratedMarkdown) return;
+
+            const btn = document.getElementById('btn-save-itinerary');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 儲存中...';
+            btn.disabled = true;
+
+            try {
+                // RULE 1: Strict Paths - 私人資料
+                // /artifacts/{appId}/users/{userId}/{collectionName}
+                const itinerariesRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'itineraries');
+                
+                // 從 markdown 提取第一行作為標題 (簡單處理)
+                const titleMatch = currentGeneratedMarkdown.match(/# (.*)/) || currentGeneratedMarkdown.match(/## (.*)/);
+                const title = titleMatch ? titleMatch[1].trim() : "AI 規劃原民部落行程";
+
+                await addDoc(itinerariesRef, {
+                    title: title,
+                    targetTribe: document.getElementById('ai-tribe').value,
+                    days: parseInt(document.getElementById('ai-days').value),
+                    markdownContent: currentGeneratedMarkdown,
+                    createdAt: serverTimestamp()
+                });
+
+                showMessage("行程已成功收藏至雲端！", "success");
+                loadSavedItineraries(); // 重新載入清單
+
+            } catch (error) {
+                console.error("Firestore Save Error:", error);
+                showMessage("儲存失敗，請檢查網路連線", "error");
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        });
+
+        // 載入已收藏的行程 (遵循 RULE 2: No Complex Queries)
+        async function loadSavedItineraries() {
+            if (!currentUser || !db) return;
+
+            const container = document.getElementById('saved-itineraries-container');
+            container.innerHTML = '<p class="text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>載入收藏中...</p>';
+
+            try {
+                // RULE 1: Strict Paths
+                const itinerariesRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'itineraries');
+                
+                // RULE 2: No orderBy, where. Just get all and sort in JS if needed.
+                // 這裡我們直接使用 onSnapshot 確保資料即時性
+                onSnapshot(itinerariesRef, (snapshot) => {
+                    if (snapshot.empty) {
+                        container.innerHTML = '<p class="text-gray-500 text-sm italic col-span-full">尚無收藏行程。使用上方 AI 管家規劃並儲存吧！</p>';
+                        return;
+                    }
+
+                    // 將文件轉為陣列並在記憶體中排序 (依建立時間反序)
+                    const itineraries = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        itineraries.push({
+                            id: doc.id,
+                            ...data,
+                            // 處理尚未寫入 serverTimestamp 的情況
+                            timestamp: data.createdAt ? data.createdAt.toMillis() : Date.now() 
+                        });
+                    });
+
+                    itineraries.sort((a, b) => b.timestamp - a.timestamp);
+
+                    let html = '';
+                    itineraries.forEach(item => {
+                        const dateStr = new Date(item.timestamp).toLocaleDateString('zh-TW');
+                        html += `
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 cursor-pointer hover:border-primary transition-colors" onclick="viewSavedItinerary('${item.id}')">
+                                <h4 class="font-bold text-gray-800 truncate mb-1">${item.title}</h4>
+                                <div class="flex justify-between items-center text-xs text-gray-500">
+                                    <span><i class="fas fa-map-marker-alt mr-1"></i>${item.targetTribe}</span>
+                                    <span><i class="far fa-clock mr-1"></i>${dateStr}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    container.innerHTML = html;
+                    
+                    // 將資料暫存到 window 以供點擊查看時使用 (因為無後端路由)
+                    window._savedItinerariesData = itineraries;
+
+                }, (error) => {
+                    console.error("Snapshot error:", error);
+                    container.innerHTML = '<p class="text-red-500 text-sm">載入失敗</p>';
+                });
+
+            } catch (error) {
+                console.error("Load Itineraries Error:", error);
+                container.innerHTML = '<p class="text-red-500 text-sm">載入失敗</p>';
+            }
+        }
+
+        // 查看已收藏的行程
+        window.viewSavedItinerary = (id) => {
+            if (!window._savedItinerariesData) return;
+            const item = window._savedItinerariesData.find(i => i.id === id);
+            if (!item) return;
+
+            const contentState = document.getElementById('ai-content');
+            const emptyState = document.getElementById('ai-empty-state');
+            const loadingState = document.getElementById('ai-loading');
+            
+            emptyState.classList.add('hidden');
+            loadingState.classList.add('hidden');
+            document.getElementById('btn-save-itinerary').classList.add('hidden'); // 已儲存的就不顯示儲存按鈕
+
+            // 渲染內容
+            contentState.innerHTML = `
+                <div class="mb-4 pb-2 border-b border-gray-200">
+                    <span class="bg-gold text-white text-xs px-2 py-1 rounded">已從雲端載入</span>
+                </div>
+                ${marked.parse(item.markdownContent)}
+            `;
+            contentState.classList.remove('hidden');
+
+            // 將畫面滾動到內容區
+            document.getElementById('tab-ai-planner').scrollIntoView({ behavior: 'smooth' });
+        };
+
+
+        // ----------------------------------------------------------------------
+        // 初始化執行
+        // ----------------------------------------------------------------------
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTribes();
+            renderFestivals();
+            renderWeather();
+        });
+
+    </script>
+</body>
+</html>
