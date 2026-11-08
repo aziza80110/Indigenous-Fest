@@ -16,6 +16,8 @@ class ScheduleTests(unittest.TestCase):
             "location": "臺東縣某鄉",
             "town": "臺東縣某鄉",
             "sourceUrl": "https://example.org/festival",
+            "dateStatus": "confirmed",
+            "datePrecision": "exact",
             "active": True,
         }
 
