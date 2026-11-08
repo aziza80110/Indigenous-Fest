@@ -63,7 +63,14 @@ def event_key(event: dict[str, Any], stage: str, recipient: str) -> str:
 
 
 def event_stage(event: dict[str, Any], today: date) -> str | None:
-    if event.get("active") is not True or not event.get("sourceUrl"):
+    # Reference windows and estimated dates are display-only. Email scheduling
+    # requires an exact date confirmed by an official event announcement.
+    if (
+        event.get("active") is not True
+        or event.get("dateStatus") != "confirmed"
+        or event.get("datePrecision") != "exact"
+        or not event.get("sourceUrl")
+    ):
         return None
     try:
         start = date.fromisoformat(event["startDate"])
