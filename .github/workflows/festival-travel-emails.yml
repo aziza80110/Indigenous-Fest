@@ -38,6 +38,39 @@ jobs:
       - name: 預覽今日符合條件的活動（不寄信）
         run: python automation/send_travel_emails.py preview
 
+  cwa-api-test:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r automation/requirements.txt
+      - name: 測試中央氣象署 API 授權（不寄信）
+        env:
+          CWA_AUTHORIZATION: ${{ secrets.CWA_AUTHORIZATION }}
+        run: |
+          python - <<'PY'
+          import os
+          import requests
+
+          token = os.environ.get("CWA_AUTHORIZATION")
+          if not token:
+              raise SystemExit("未設定 CWA_AUTHORIZATION Secret")
+
+          response = requests.get(
+              "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091",
+              params={"Authorization": token, "format": "JSON"},
+              timeout=20,
+          )
+          response.raise_for_status()
+          locations = response.json().get("records", {}).get("Locations", [])
+          if not locations or not locations[0].get("Location"):
+              raise SystemExit("API 有回應，但沒有取得鄉鎮預報資料")
+          print(f"CWA API 授權成功；已取得 {len(locations[0]['Location'])} 個鄉鎮資料。")
+          PY
+
   scheduled-send:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
