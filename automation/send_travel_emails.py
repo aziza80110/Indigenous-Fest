@@ -62,6 +62,48 @@ def event_key(event: dict[str, Any], stage: str, recipient: str) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def active_subscriptions() -> list[dict[str, Any]]:
+    """Read only active, verified opt-ins from Firestore using the GitHub secret."""
+    raw = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON", "").strip()
+    if not raw:
+        return []
+    try:
+        from firebase_admin import credentials, firestore, get_app, initialize_app
+        try:
+            app = get_app("festival-mail-subscriber-reader")
+        except ValueError:
+            app = initialize_app(
+                credentials.Certificate(json.loads(raw)),
+                name="festival-mail-subscriber-reader",
+            )
+        database = firestore.client(app=app)
+        rows = []
+        for snapshot in database.collection("mailSubscriptions").where("active", "==", True).stream():
+            data = snapshot.to_dict()
+            if data.get("consent") is True and data.get("email") and data.get("tribes"):
+                rows.append({"token": snapshot.id, **data})
+        return rows
+    except Exception as exc:
+        raise RuntimeError("無法讀取 Firebase 訂閱名單；請檢查 FIREBASE_SERVICE_ACCOUNT_JSON 權限") from exc
+
+
+def recipients_for_event(event: dict[str, Any], owner_email: str) -> list[dict[str, str]]:
+    """Combine the owner's existing alerts with opted-in visitors matching this event."""
+    recipients: dict[str, dict[str, str]] = {}
+    if owner_email.strip():
+        email = owner_email.strip().lower()
+        recipients[email] = {"email": email, "unsubscribe_token": ""}
+    for subscription in active_subscriptions():
+        preferences = subscription.get("tribes", [])
+        if "all" not in preferences and event.get("tribe") not in preferences:
+            continue
+        email = str(subscription.get("email", "")).strip().lower()
+        token = str(subscription.get("token", ""))
+        if email and token:
+            recipients[email] = {"email": email, "unsubscribe_token": token}
+    return list(recipients.values())
+
+
 def event_stage(event: dict[str, Any], today: date) -> str | None:
     # Reference windows and estimated dates are display-only. Email scheduling
     # requires an exact date confirmed by an official event announcement.
@@ -117,18 +159,21 @@ def claim_due(events: list[dict[str, Any]], state: dict[str, Any], today: date,
     now = now or datetime.now(timezone.utc)
     claimed = []
     for event, stage in due_events(events, today):
-        key = event_key(event, stage, recipient)
-        if not can_claim(state.get(key), now):
-            continue
-        state[key] = {
-            "eventId": event["id"],
-            "eventName": event.get("name", event["id"]),
-            "startDate": event["startDate"],
-            "stage": stage,
-            "status": "claimed",
-            "claimedAt": now.isoformat(),
-        }
-        claimed.append(key)
+        for target in recipients_for_event(event, recipient):
+            email = target["email"]
+            key = event_key(event, stage, email)
+            if not can_claim(state.get(key), now):
+                continue
+            state[key] = {
+                "eventId": event["id"],
+                "eventName": event.get("name", event["id"]),
+                "startDate": event["startDate"],
+                "stage": stage,
+                "recipientHash": hashlib.sha256(email.encode("utf-8")).hexdigest(),
+                "status": "claimed",
+                "claimedAt": now.isoformat(),
+            }
+            claimed.append(key)
     return claimed
 
 
@@ -206,7 +251,7 @@ def format_places(payload: dict[str, Any]) -> str:
     return "\n".join(lines) or "查無結果，請使用查詢連結確認。"
 
 
-def build_brief(event: dict[str, Any], stage: str, today: date) -> str:
+def build_brief(event: dict[str, Any], stage: str, today: date, unsubscribe_url: str = \"\") -> str:
     start = date.fromisoformat(event["startDate"])
     days_until = (start - today).days
     weather = cwa_forecast(event["town"], event.get("county", "")) if days_until <= 7 else {
@@ -237,6 +282,7 @@ def build_brief(event: dict[str, Any], stage: str, today: date) -> str:
 {format_places(food)}
 
 注意：Places 價格級距不是房價或實際餐費；訂房價格須按日期、人數及房型確認。若預報尚未涵蓋祭期，不能視為已知天氣。
+{f"取消訂閱：{unsubscribe_url}" if unsubscribe_url else "本信箱為網站管理者設定的固定通知地址。"}
 """
 
 
@@ -281,13 +327,25 @@ def process_claimed(events_path: Path, state_path: Path, today: date,
         event = by_id.get(record.get("eventId"))
         if not event or event_stage(event, today) != record.get("stage"):
             continue
+        target_hash = record.get("recipientHash")
+        target = next((row for row in recipients_for_event(event, recipient)
+                       if hashlib.sha256(row["email"].encode("utf-8")).hexdigest() == target_hash), None)
+        if not target:
+            # The visitor unsubscribed after the claim was created; do not send.
+            state[key] = {**record, "status": "skipped_unsubscribed",
+                          "finishedAt": datetime.now(timezone.utc).isoformat()}
+            continue
         stage_label = "出發前天氣更新" if record["stage"] == "weather_update" else "行程規劃"
         try:
-            body = build_brief(event, record["stage"], today)
+            unsubscribe_url = (
+                "https://aziza80110.github.io/Indigenous-Fest/subscribe.html?unsubscribe="
+                + target["unsubscribe_token"]
+            ) if target.get("unsubscribe_token") else ""
+            body = build_brief(event, record["stage"], today, unsubscribe_url)
             email_id = send_email(
                 f"【祭典{stage_label}】{event.get('name', event['id'])}｜{event['startDate']}",
                 body,
-                recipient,
+                target["email"],
                 key,
             )
             state[key] = {**record, "status": "sent", "sentAt": datetime.now(timezone.utc).isoformat(), "emailId": email_id}
