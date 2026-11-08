@@ -60,7 +60,7 @@ jobs:
               raise SystemExit("未設定 CWA_AUTHORIZATION Secret")
 
           response = requests.get(
-              "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091",
+              "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-093",
               params={"Authorization": token, "format": "JSON"},
               timeout=20,
           )
