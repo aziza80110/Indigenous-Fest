@@ -297,15 +297,13 @@ def main() -> int:
     events = load_json(args.events, [])
     state = load_json(args.state, {})
     if args.command == "claim":
-        if not recipient:
-            raise RuntimeError("請先在 GitHub Actions 設定 TRIP_EMAIL_TO Secret")
         keys = claim_due(events, state, today, recipient)
+        if keys and not recipient:
+            raise RuntimeError("已有符合日期的祭典；請先在 GitHub Actions 設定 TRIP_EMAIL_TO Secret")
         save_json(args.state, state)
         print(f"已建立 {len(keys)} 筆待寄送紀錄。")
         return 0
 
-    if not recipient:
-        raise RuntimeError("請先在 GitHub Actions 設定 TRIP_EMAIL_TO Secret")
     success, failed = process_claimed(args.events, args.state, today, recipient)
     print(f"寄送成功 {success} 筆；失敗 {failed} 筆。")
     return 1 if failed else 0
