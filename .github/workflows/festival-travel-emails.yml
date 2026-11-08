@@ -89,6 +89,7 @@ jobs:
       - name: 建立待寄送紀錄
         env:
           TRIP_EMAIL_TO: ${{ secrets.TRIP_EMAIL_TO }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
         run: python automation/send_travel_emails.py claim --state .automation-state/mail-delivery-state.json
       - name: 保存待寄送紀錄
         run: |
@@ -104,6 +105,7 @@ jobs:
         continue-on-error: true
         env:
           TRIP_EMAIL_TO: ${{ secrets.TRIP_EMAIL_TO }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           MAIL_FROM: ${{ secrets.MAIL_FROM }}
           CWA_AUTHORIZATION: ${{ secrets.CWA_AUTHORIZATION }}
