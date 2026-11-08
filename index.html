@@ -238,7 +238,7 @@
             
             <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg mb-6 flex items-start">
                 <i class="fas fa-info-circle mt-1 mr-3 text-blue-500"></i>
-                <p class="text-sm">以下列出16族主要分布地區的中央氣象署鄉鎮預報入口。點入後請選擇祭典實際舉辦的鄉鎮；同一族可能分布多個縣市，山區與海岸天氣也可能不同。預報約更新並涵蓋未來一週，出發前請再次確認。</p>
+                <p class="text-sm">下方顯示各族代表鄉鎮的中央氣象署最新預報，資料由 GitHub Actions 定時更新。點選氣象署連結可查看其他鄉鎮；族群分布廣，請以祭典實際舉辦地點為準。預報資料通常涵蓋未來一週，較遠日期請參考氣候資料，不可當作精確天氣預報。</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="weather-container">
@@ -502,19 +502,68 @@
         }
 
         // 渲染氣象預報
-        function renderWeather() {
+        async function renderWeather() {
             const container = document.getElementById('weather-container');
             const cwaTownForecast = 'https://www.cwa.gov.tw/V8/C/W/Town/index.html';
-            container.innerHTML = WEATHER_LOCATIONS.map(item => `
-                <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col">
-                    <h3 class="font-bold text-gray-800 mb-2">${item.tribe}</h3>
-                    <p class="text-sm text-gray-600 mb-4">${item.areas}</p>
-                    <a class="mt-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 font-medium text-sm px-4 py-3"
-                       href="${cwaTownForecast}" target="_blank" rel="noopener noreferrer">
-                        <i class="fas fa-cloud-sun"></i>開啟中央氣象署鄉鎮預報
-                    </a>
-                </article>
-            `).join('');
+            const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[char]));
+            container.innerHTML = '<p class="text-sm text-gray-500">正在載入各族代表地區天氣…</p>';
+
+            try {
+                const response = await fetch('./weather.json', { cache: 'no-store' });
+                if (!response.ok) throw new Error('天氣資料尚未發布');
+                const payload = await response.json();
+                const byTribe = new Map();
+                (payload.forecasts || []).forEach(row => {
+                    if (!byTribe.has(row.tribe)) byTribe.set(row.tribe, []);
+                    byTribe.get(row.tribe).push(row);
+                });
+                const updatedAt = escapeHtml(payload.generatedAt || '時間未提供');
+
+                container.innerHTML = WEATHER_LOCATIONS.map(item => {
+                    const rows = byTribe.get(item.tribe) || [];
+                    const forecastHtml = rows.length
+                        ? rows.map(row => {
+                            const temp = [row.minTemperature && `低溫 ${escapeHtml(row.minTemperature)}°C`,
+                                          row.maxTemperature && `高溫 ${escapeHtml(row.maxTemperature)}°C`]
+                                .filter(Boolean).join('／');
+                            const rain = row.precipitationProbability
+                                ? `降雨機率 ${escapeHtml(row.precipitationProbability)}%` : '';
+                            const detail = [temp, rain].filter(Boolean).join('；');
+                            const weather = escapeHtml(row.weather || row.phenomenon || '預報內容未提供');
+                            const place = escapeHtml([row.county, row.town].filter(Boolean).join(''));
+                            const period = row.forecastStart ? `｜${escapeHtml(row.forecastStart)}` : '';
+                            return `<li class="mb-2"><strong>${place}</strong>：${weather}${detail ? `（${detail}）` : ''}<span class="block text-xs text-gray-500">${period}</span></li>`;
+                        }).join('')
+                        : '<li class="text-sm text-gray-500">目前沒有可用的代表鄉鎮預報，請開啟氣象署頁面查詢。</li>';
+
+                    return `
+                        <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col">
+                            <h3 class="font-bold text-gray-800 mb-2">${escapeHtml(item.tribe)}</h3>
+                            <p class="text-sm text-gray-600 mb-3">${escapeHtml(item.areas)}</p>
+                            <ul class="text-sm text-gray-700 mb-4">${forecastHtml}</ul>
+                            <p class="text-xs text-gray-500 mb-3">資料更新時間：${updatedAt}</p>
+                            <a class="mt-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 font-medium text-sm px-4 py-3"
+                               href="${cwaTownForecast}" target="_blank" rel="noopener noreferrer">
+                                <i class="fas fa-cloud-sun"></i>查看氣象署鄉鎮預報
+                            </a>
+                        </article>
+                    `;
+                }).join('');
+            } catch (error) {
+                container.innerHTML = WEATHER_LOCATIONS.map(item => `
+                    <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col">
+                        <h3 class="font-bold text-gray-800 mb-2">${escapeHtml(item.tribe)}</h3>
+                        <p class="text-sm text-gray-600 mb-4">${escapeHtml(item.areas)}</p>
+                        <p class="text-sm text-amber-800 bg-amber-50 rounded p-3 mb-4">最新天氣資料尚未更新；可先至氣象署查詢。</p>
+                        <a class="mt-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 font-medium text-sm px-4 py-3"
+                           href="${cwaTownForecast}" target="_blank" rel="noopener noreferrer">
+                            <i class="fas fa-cloud-sun"></i>查看氣象署鄉鎮預報
+                        </a>
+                    </article>
+                `).join('');
+            }
         }
 
         // ----------------------------------------------------------------------
