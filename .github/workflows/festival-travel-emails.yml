@@ -55,7 +55,7 @@ jobs:
           import os
           import requests
 
-          token = os.environ.get("CWA_AUTHORIZATION")
+          token = os.environ.get("CWA_AUTHORIZATION", "").strip()
           if not token:
               raise SystemExit("未設定 CWA_AUTHORIZATION Secret")
 
