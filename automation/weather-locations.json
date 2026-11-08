@@ -1,18 +1,223 @@
 [
-  {"tribe":"阿美族","towns":["豐濱鄉","成功鎮"]},
-  {"tribe":"泰雅族","towns":["尖石鄉","大同鄉"]},
-  {"tribe":"排灣族","towns":["三地門鄉","達仁鄉"]},
-  {"tribe":"布農族","towns":["信義鄉","海端鄉"]},
-  {"tribe":"卑南族","towns":["卑南鄉"]},
-  {"tribe":"魯凱族","towns":["霧臺鄉","茂林區"]},
-  {"tribe":"鄒族","towns":["阿里山鄉","桃源區"]},
-  {"tribe":"賽夏族","towns":["五峰鄉","南庄鄉"]},
-  {"tribe":"雅美族（達悟族）","towns":["蘭嶼鄉"]},
-  {"tribe":"邵族","towns":["魚池鄉"]},
-  {"tribe":"噶瑪蘭族","towns":["豐濱鄉","東河鄉"]},
-  {"tribe":"太魯閣族","towns":["秀林鄉"]},
-  {"tribe":"撒奇萊雅族","towns":["花蓮市"]},
-  {"tribe":"賽德克族","towns":["仁愛鄉","萬榮鄉"]},
-  {"tribe":"拉阿魯哇族","towns":["桃源區"]},
-  {"tribe":"卡那卡那富族","towns":["那瑪夏區"]}
+  {
+    "tribe": "阿美族",
+    "areas": "花蓮縣、臺東縣（東海岸、縱谷及平原部落）",
+    "locations": [
+      {
+        "county": "花蓮縣",
+        "town": "豐濱鄉",
+        "dataId": "F-D0047-043"
+      },
+      {
+        "county": "臺東縣",
+        "town": "成功鎮",
+        "dataId": "F-D0047-039"
+      }
+    ]
+  },
+  {
+    "tribe": "泰雅族",
+    "areas": "新北市、桃園市、新竹縣、苗栗縣、臺中市、宜蘭縣",
+    "locations": [
+      {
+        "county": "新竹縣",
+        "town": "尖石鄉",
+        "dataId": "F-D0047-011"
+      },
+      {
+        "county": "宜蘭縣",
+        "town": "大同鄉",
+        "dataId": "F-D0047-003"
+      }
+    ]
+  },
+  {
+    "tribe": "排灣族",
+    "areas": "屏東縣、臺東縣",
+    "locations": [
+      {
+        "county": "屏東縣",
+        "town": "三地門鄉",
+        "dataId": "F-D0047-035"
+      },
+      {
+        "county": "臺東縣",
+        "town": "達仁鄉",
+        "dataId": "F-D0047-039"
+      }
+    ]
+  },
+  {
+    "tribe": "布農族",
+    "areas": "南投縣、花蓮縣、臺東縣、高雄市",
+    "locations": [
+      {
+        "county": "南投縣",
+        "town": "信義鄉",
+        "dataId": "F-D0047-023"
+      },
+      {
+        "county": "臺東縣",
+        "town": "海端鄉",
+        "dataId": "F-D0047-039"
+      }
+    ]
+  },
+  {
+    "tribe": "卑南族",
+    "areas": "臺東縣臺東市及周邊部落",
+    "locations": [
+      {
+        "county": "臺東縣",
+        "town": "卑南鄉",
+        "dataId": "F-D0047-039"
+      }
+    ]
+  },
+  {
+    "tribe": "魯凱族",
+    "areas": "屏東縣、臺東縣、高雄市",
+    "locations": [
+      {
+        "county": "屏東縣",
+        "town": "霧臺鄉",
+        "dataId": "F-D0047-035"
+      },
+      {
+        "county": "高雄市",
+        "town": "茂林區",
+        "dataId": "F-D0047-067"
+      }
+    ]
+  },
+  {
+    "tribe": "鄒族",
+    "areas": "嘉義縣阿里山鄉、高雄市桃源區",
+    "locations": [
+      {
+        "county": "嘉義縣",
+        "town": "阿里山鄉",
+        "dataId": "F-D0047-031"
+      },
+      {
+        "county": "高雄市",
+        "town": "桃源區",
+        "dataId": "F-D0047-067"
+      }
+    ]
+  },
+  {
+    "tribe": "賽夏族",
+    "areas": "新竹縣五峰鄉、苗栗縣南庄鄉",
+    "locations": [
+      {
+        "county": "新竹縣",
+        "town": "五峰鄉",
+        "dataId": "F-D0047-011"
+      },
+      {
+        "county": "苗栗縣",
+        "town": "南庄鄉",
+        "dataId": "F-D0047-015"
+      }
+    ]
+  },
+  {
+    "tribe": "雅美族（達悟族）",
+    "areas": "臺東縣蘭嶼鄉各部落",
+    "locations": [
+      {
+        "county": "臺東縣",
+        "town": "蘭嶼鄉",
+        "dataId": "F-D0047-039"
+      }
+    ]
+  },
+  {
+    "tribe": "邵族",
+    "areas": "南投縣魚池鄉（日月潭周邊）",
+    "locations": [
+      {
+        "county": "南投縣",
+        "town": "魚池鄉",
+        "dataId": "F-D0047-023"
+      }
+    ]
+  },
+  {
+    "tribe": "噶瑪蘭族",
+    "areas": "花蓮縣新社等部落、臺東縣",
+    "locations": [
+      {
+        "county": "花蓮縣",
+        "town": "豐濱鄉",
+        "dataId": "F-D0047-043"
+      },
+      {
+        "county": "臺東縣",
+        "town": "東河鄉",
+        "dataId": "F-D0047-039"
+      }
+    ]
+  },
+  {
+    "tribe": "太魯閣族",
+    "areas": "花蓮縣、南投縣",
+    "locations": [
+      {
+        "county": "花蓮縣",
+        "town": "秀林鄉",
+        "dataId": "F-D0047-043"
+      }
+    ]
+  },
+  {
+    "tribe": "撒奇萊雅族",
+    "areas": "花蓮縣花蓮市、豐濱鄉等地",
+    "locations": [
+      {
+        "county": "花蓮縣",
+        "town": "花蓮市",
+        "dataId": "F-D0047-043"
+      }
+    ]
+  },
+  {
+    "tribe": "賽德克族",
+    "areas": "南投縣仁愛鄉、花蓮縣萬榮鄉及秀林鄉",
+    "locations": [
+      {
+        "county": "南投縣",
+        "town": "仁愛鄉",
+        "dataId": "F-D0047-023"
+      },
+      {
+        "county": "花蓮縣",
+        "town": "萬榮鄉",
+        "dataId": "F-D0047-043"
+      }
+    ]
+  },
+  {
+    "tribe": "拉阿魯哇族",
+    "areas": "高雄市桃源區",
+    "locations": [
+      {
+        "county": "高雄市",
+        "town": "桃源區",
+        "dataId": "F-D0047-067"
+      }
+    ]
+  },
+  {
+    "tribe": "卡那卡那富族",
+    "areas": "高雄市那瑪夏區",
+    "locations": [
+      {
+        "county": "高雄市",
+        "town": "那瑪夏區",
+        "dataId": "F-D0047-067"
+      }
+    ]
+  }
 ]
