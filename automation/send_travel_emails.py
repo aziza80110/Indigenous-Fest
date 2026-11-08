@@ -118,7 +118,7 @@ def cwa_forecast(town: str) -> dict[str, Any]:
     if not token:
         return {"status": "not_configured", "message": "尚未設定中央氣象署授權碼"}
     response = requests.get(
-        f"{CWA_BASE}/F-D0047-091",
+        f"{CWA_BASE}/F-D0047-093",
         params={"Authorization": token, "format": "JSON", "LocationName": town},
         timeout=15,
     )
