@@ -114,7 +114,7 @@ def claim_due(events: list[dict[str, Any]], state: dict[str, Any], today: date,
 def cwa_forecast(town: str) -> dict[str, Any]:
     import requests
 
-    token = os.getenv("CWA_AUTHORIZATION")
+    token = os.getenv("CWA_AUTHORIZATION", "").strip()
     if not token:
         return {"status": "not_configured", "message": "尚未設定中央氣象署授權碼"}
     response = requests.get(
