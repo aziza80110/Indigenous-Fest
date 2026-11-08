@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // A random 256-bit document ID is the capability token in the unsubscribe URL.
+    // Visitors can fetch one record when they possess that token, but cannot list
+    // the collection. Owners may query only their own verified email address.
+    match /mailSubscriptions/{token} {
+      function verifiedOwner(data) {
+        return request.auth != null
+          && request.auth.token.email_verified == true
+          && request.auth.token.email == data.email;
+      }
+
+      function validSubscription(data) {
+        return data.keys().hasOnly([
+            'email', 'tribes', 'active', 'consent', 'consentVersion',
+            'consentedAt', 'verifiedAt', 'createdAt', 'unsubscribedAt'
+          ])
+          && data.keys().hasAll([
+            'email', 'tribes', 'active', 'consent', 'consentVersion',
+            'consentedAt', 'verifiedAt', 'createdAt'
+          ])
+          && data.email is string
+          && data.email.size() <= 254
+          && data.tribes is list
+          && data.tribes.size() >= 1
+          && data.tribes.size() <= 16
+          && data.active is bool
+          && data.consent == true
+          && data.consentVersion is string;
+      }
+
+      allow get: if true;
+      allow list: if request.auth != null
+        && request.auth.token.email_verified == true
+        && resource.data.email == request.auth.token.email;
+
+      allow create: if request.auth != null
+        && request.auth.token.email_verified == true
+        && request.resource.data.email == request.auth.token.email
+        && token.matches('^[a-f0-9]{64}$')
+        && validSubscription(request.resource.data)
+        && request.resource.data.active == true
+        && request.resource.data.consentedAt == request.time
+        && request.resource.data.verifiedAt == request.time
+        && request.resource.data.createdAt == request.time;
+
+      // Verified owner may manage their preferences; a bearer unsubscribe link
+      // can only switch active from true to false and stamp the cancellation time.
+      allow update: if (
+          verifiedOwner(resource.data)
+          && verifiedOwner(request.resource.data)
+          && validSubscription(request.resource.data)
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['tribes', 'active', 'consentedAt', 'unsubscribedAt'])
+        ) || (
+          resource.data.active == true
+          && request.resource.data.active == false
+          && request.resource.data.unsubscribedAt == request.time
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['active', 'unsubscribedAt'])
+        );
+      allow delete: if false;
+    }
+
+    // Keep visitors' saved itineraries private to their Firebase Auth UID.
+    match /artifacts/{appId}/users/{userId}/itineraries/{itineraryId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // These collections are maintained by the trusted scheduled worker.
+    match /festivals/{eventId} {
+      allow read, write: if false;
+    }
+    match /mailDeliveries/{deliveryId} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
