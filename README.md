@@ -13,7 +13,7 @@
 
 1. 合併此變更到 `main`。排程只會在預設分支上的 workflow 存在時啟動。
 2. 在 GitHub 儲存庫的 **Settings → Secrets and variables → Actions → New repository secret** 新增：
-   - `TRIP_EMAIL_TO`：`aziza80120@gmail.com`
+   - `TRIP_EMAIL_TO`：你要收信的信箱（請在 Secrets 欄位內輸入，不要寫進程式或公開檔案）
    - `RESEND_API_KEY`：Resend API 金鑰（勿貼在聊天或程式碼）
    - `MAIL_FROM`：已在 Resend 驗證的寄件人，例如 `祭典旅遊規劃 <travel@你的已驗證網域>`
    - `CWA_AUTHORIZATION`：中央氣象署開放資料會員授權碼
