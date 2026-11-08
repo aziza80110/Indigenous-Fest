@@ -251,7 +251,7 @@ def format_places(payload: dict[str, Any]) -> str:
     return "\n".join(lines) or "查無結果，請使用查詢連結確認。"
 
 
-def build_brief(event: dict[str, Any], stage: str, today: date, unsubscribe_url: str = \"\") -> str:
+def build_brief(event: dict[str, Any], stage: str, today: date, unsubscribe_url: str = "") -> str:
     start = date.fromisoformat(event["startDate"])
     days_until = (start - today).days
     weather = cwa_forecast(event["town"], event.get("county", "")) if days_until <= 7 else {
@@ -262,6 +262,7 @@ def build_brief(event: dict[str, Any], stage: str, today: date, unsubscribe_url:
     food = places_search(f"在地特色餐廳 {event['town']}")
     origin = os.getenv("TRIP_ORIGIN", "臺北市")
     weather_text = weather["message"] if weather["status"] != "ok" else "已取得中央氣象署鄉鎮預報，出發前請再次確認最新預報。"
+    unsubscribe_line = f"取消訂閱：{unsubscribe_url}" if unsubscribe_url else "本信箱為網站管理者設定的固定通知地址。"
     return f"""臺灣原住民族祭典旅遊規劃｜{event.get('name', event['id'])}
 
 祭典日期：{event['startDate']}（距今 {days_until} 天）
@@ -282,7 +283,7 @@ def build_brief(event: dict[str, Any], stage: str, today: date, unsubscribe_url:
 {format_places(food)}
 
 注意：Places 價格級距不是房價或實際餐費；訂房價格須按日期、人數及房型確認。若預報尚未涵蓋祭期，不能視為已知天氣。
-{f"取消訂閱：{unsubscribe_url}" if unsubscribe_url else "本信箱為網站管理者設定的固定通知地址。"}
+{unsubscribe_line}
 """
 
 
