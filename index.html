@@ -159,28 +159,40 @@
                     <h3 class="text-lg font-bold text-primary mb-4"><i class="fas fa-sliders-h mr-2"></i>設定您的旅程</h3>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">出發城市</label>
-                            <input type="text" id="ai-origin" placeholder="例如：台北市、高雄市" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
+                            <label for="ai-origin" class="block text-sm font-medium text-gray-700 mb-1">出發縣市</label>
+                            <select id="ai-origin" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent outline-none">
+                                <option value="">請選擇出發縣市</option>
+                                <option>基隆市</option><option>臺北市</option><option>新北市</option><option>桃園市</option>
+                                <option>新竹市</option><option>新竹縣</option><option>苗栗縣</option><option>臺中市</option>
+                                <option>彰化縣</option><option>南投縣</option><option>雲林縣</option><option>嘉義市</option>
+                                <option>嘉義縣</option><option>臺南市</option><option>高雄市</option><option>屏東縣</option>
+                                <option>宜蘭縣</option><option>花蓮縣</option><option>臺東縣</option><option>澎湖縣</option>
+                                <option>金門縣</option><option>連江縣</option><option value="other">其他（自行填寫）</option>
+                            </select>
+                            <input type="text" id="ai-origin-other" hidden maxlength="60" aria-label="其他出發地" placeholder="請填寫出發城市或地點" class="w-full mt-2 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">旅遊天數</label>
+                            <label for="ai-days" class="block text-sm font-medium text-gray-700 mb-1">旅遊天數</label>
                             <select id="ai-days" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none">
                                 <option value="1">1 天 (單日體驗)</option>
                                 <option value="2">2 天 (週末輕旅)</option>
                                 <option value="3" selected>3 天 (深度漫遊)</option>
                                 <option value="4">4 天 (部落探索)</option>
+                                <option value="other">其他（自行填寫）</option>
                             </select>
+                            <input type="number" id="ai-days-other" hidden min="1" max="30" step="1" inputmode="numeric" aria-label="自填旅遊天數" placeholder="請輸入 1 至 30 天" class="w-full mt-2 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">目標族群/地區</label>
+                            <label for="ai-tribe" class="block text-sm font-medium text-gray-700 mb-1">目標族群/地區</label>
                             <select id="ai-tribe" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none">
-                                <option value="阿美族 (花東地區)">阿美族 (花東地區)</option>
-                                <option value="排灣族 (屏東/台東)">排灣族 (屏東/台東)</option>
-                                <option value="泰雅族 (北部/中部山區)">泰雅族 (北部/中部山區)</option>
-                                <option value="布農族 (中央山脈周邊)">布農族 (中央山脈周邊)</option>
-                                <option value="魯凱族 (屏東/台東/高雄)">魯凱族 (屏東/台東/高雄)</option>
-                                <option value="鄒族 (嘉義阿里山)">鄒族 (嘉義阿里山)</option>
-                                <option value="達悟族 (蘭嶼)">達悟族 (蘭嶼)</option>
+                                <option value="阿美族">阿美族</option><option value="泰雅族">泰雅族</option>
+                                <option value="排灣族">排灣族</option><option value="布農族">布農族</option>
+                                <option value="卑南族">卑南族</option><option value="魯凱族">魯凱族</option>
+                                <option value="鄒族">鄒族</option><option value="賽夏族">賽夏族</option>
+                                <option value="雅美族（達悟族）">雅美族（達悟族）</option><option value="邵族">邵族</option>
+                                <option value="噶瑪蘭族">噶瑪蘭族</option><option value="太魯閣族">太魯閣族</option>
+                                <option value="撒奇萊雅族">撒奇萊雅族</option><option value="賽德克族">賽德克族</option>
+                                <option value="拉阿魯哇族">拉阿魯哇族</option><option value="卡那卡那富族">卡那卡那富族</option>
                                 <option value="不指定，請 AI 推薦">不指定，請 AI 推薦</option>
                             </select>
                         </div>
@@ -635,11 +647,35 @@
         // ----------------------------------------------------------------------
         let currentGeneratedMarkdown = "";
 
+        const originSelect = document.getElementById('ai-origin');
+        const originOtherInput = document.getElementById('ai-origin-other');
+        const daysSelect = document.getElementById('ai-days');
+        const daysOtherInput = document.getElementById('ai-days-other');
+        originSelect.addEventListener('change', () => {
+            const showOther = originSelect.value === 'other';
+            originOtherInput.hidden = !showOther;
+            originOtherInput.required = showOther;
+            if (!showOther) originOtherInput.value = '';
+        });
+        daysSelect.addEventListener('change', () => {
+            const showOther = daysSelect.value === 'other';
+            daysOtherInput.hidden = !showOther;
+            daysOtherInput.required = showOther;
+            if (!showOther) daysOtherInput.value = '';
+        });
+
         document.getElementById('btn-generate-ai').addEventListener('click', async () => {
-            const origin = document.getElementById('ai-origin').value.trim() || '台北市';
-            const days = document.getElementById('ai-days').value;
+            const originChoice = originSelect.value;
+            const origin = originChoice === 'other' ? originOtherInput.value.trim() : originChoice;
+            const daysChoice = daysSelect.value;
+            const days = daysChoice === 'other' ? daysOtherInput.value.trim() : daysChoice;
+            const daysNumber = Number(days);
             const tribe = document.getElementById('ai-tribe').value;
             const preference = document.getElementById('ai-preference').value.trim() || '無特定偏好';
+            if (!origin || !Number.isInteger(daysNumber) || daysNumber < 1 || daysNumber > 30) {
+                showMessage('請選擇或填寫出發地，並輸入 1 至 30 天的旅遊天數。', 'error');
+                return;
+            }
 
             const btn = document.getElementById('btn-generate-ai');
             const emptyState = document.getElementById('ai-empty-state');
@@ -757,7 +793,8 @@
                 await addDoc(itinerariesRef, {
                     title: title,
                     targetTribe: document.getElementById('ai-tribe').value,
-                    days: parseInt(document.getElementById('ai-days').value),
+                    origin: originSelect.value === 'other' ? originOtherInput.value.trim() : originSelect.value,
+                    days: Number(daysSelect.value === 'other' ? daysOtherInput.value : daysSelect.value),
                     markdownContent: currentGeneratedMarkdown,
                     createdAt: serverTimestamp()
                 });
