@@ -1,19 +1,31 @@
 name: 祭典旅遊規劃通知
 
 on:
+  pull_request:
   schedule:
     - cron: "17 9 * * *"
       timezone: Asia/Taipei
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: festival-travel-email-scheduler
   cancel-in-progress: false
 
 jobs:
+  test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r automation/requirements.txt
+      - run: python -m unittest discover -s tests -v
+
   preview:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -29,6 +41,8 @@ jobs:
   scheduled-send:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
