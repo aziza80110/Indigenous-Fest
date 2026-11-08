@@ -131,6 +131,7 @@
         <!-- Tab 1: 17 族百科與禁忌 -->
         <section id="tab-encyclopedia" class="tab-content active">
             <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-primary inline-block pb-2">臺灣原住民族16族圖鑑</h2>
+            <p class="text-sm text-gray-600 mb-5 leading-6">族群介紹參考<a class="text-primary underline" href="https://www.cip.gov.tw/zh-tw/tribe/grid-list/index.html?cumid=8F19BF08AE220D65" target="_blank" rel="noopener noreferrer">原住民族委員會16族簡介</a>。祭儀由各部落傳承，請尊重族人對文化內容與影像分享的自主決定。</p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tribes-container">
                 <!-- Tribe Cards injected via JS -->
             </div>
@@ -139,6 +140,7 @@
         <!-- Tab 2: 歲時祭典行事曆 -->
         <section id="tab-calendar" class="tab-content">
             <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-primary inline-block pb-2">歲時祭儀行事曆</h2>
+            <p class="text-sm text-gray-600 mb-5 leading-6">祭儀介紹可參考<a class="text-primary underline" href="https://www.cip.gov.tw/zh-tw/news/data-list/B54B5C7E1E0F9940305541587E76BF5C/index.html?cumid=B54B5C7E1E0F9940305541587E76BF5C" target="_blank" rel="noopener noreferrer">原民會各族歲時祭儀介紹</a>與<a class="text-primary underline" href="https://index.ipcf.org.tw/zh-TW/Festival/List" target="_blank" rel="noopener noreferrer">原住民族文化事業基金會祭儀資料</a>。政府公告的歲時祭儀日期為放假期間，不一定是對外活動的實際場次；請以主辦部落當年公告確認日期、地點與開放方式。</p>
             <div class="bg-white rounded-2xl shadow-sm p-6">
                 <div class="relative border-l-2 border-gold ml-3" id="festivals-timeline">
                     <!-- Timeline items injected via JS -->
@@ -335,7 +337,7 @@
         // ----------------------------------------------------------------------
         // 官方認定16族；祭儀時序僅列常見季節，確切日期及開放範圍以主辦部落當年公告為準。
         const MOCK_TRIBES = [
-            {id:"amis",name:"阿美族",romanizedName:"Amis / Pangcah",regions:["花蓮縣","臺東縣"],summary:"部落分布於東部海岸、縱谷與平原；以年齡組織、歌舞及豐年祭維繫部落互助與文化傳承。",culturalTaboos:["祭典各階段規範由部落訂定，先確認是否請確認開放方式。","拍攝族人、祭儀及家屋前先徵得同意。","依主辦方動線與指引行動，不擅闖管制區。"],iconSymbol:"☀️",color:"border-red-500"},
+            {id:"amis",name:"阿美族",romanizedName:"Amis / Pangcah",regions:["花蓮縣","臺東縣"],summary:"部落分布於東部海岸、縱谷與平原；以年齡組織、歌舞及豐年祭維繫部落互助與文化傳承。",culturalTaboos:["祭典各階段規範由部落訂定，先確認祭典是否開放觀禮及相關方式。","拍攝族人、祭儀及家屋前先徵得同意。","依主辦方動線與指引行動，不擅闖管制區。"],iconSymbol:"☀️",color:"border-red-500"},
             {id:"tayal",name:"泰雅族",romanizedName:"Tayal / Atayal",regions:["新北市","桃園市","新竹縣","苗栗縣","臺中市","宜蘭縣"],summary:"以gaga（祖訓與規範）、織布與傳統紋面文化著稱；部落分布跨越北部及中部山區。",culturalTaboos:["祖靈祭及家族儀式多有內部規範，未獲邀請不要求參與。","進入部落及山林前先洽詢在地接待者。","不觸碰祭具、獵具或私人家屋物品。"],iconSymbol:"🧶",color:"border-red-700"},
             {id:"paiwan",name:"排灣族",romanizedName:"Paiwan",regions:["屏東縣","臺東縣"],summary:"家名、家族與階序關係形塑社會生活；石板屋、琉璃珠、陶壺與百步蛇意象展現豐富藝術傳統。",culturalTaboos:["依部落規範參與小米收穫祭或五年祭，神聖儀式可能不開放。","石板屋、祖靈柱及工藝品未經同意不可觸摸。","拍攝或分享祭儀影像前，先詢問主辦者。"],iconSymbol:"🐍",color:"border-gray-800"},
             {id:"bunun",name:"布農族",romanizedName:"Bunun",regions:["南投縣","花蓮縣","臺東縣","高雄市"],summary:"分布於中央山脈兩側；以八部合音、狩獵知識及配合農事歲時的祭儀聞名。",culturalTaboos:["打耳祭等儀式可能設有參與限制，依部落當年公告。","射箭場、祭場及祭具非開放區域請勿進入或觸碰。","尊重部落的狩獵、山林與拍攝規範。"],iconSymbol:"🏹",color:"border-green-700"},
@@ -457,7 +459,7 @@
                 const statusColor = fest.status === 'ongoing' ? 'bg-green-500' : 'bg-blue-400';
                 const statusText = '日期依部落公告';
                 const publicBadge = fest.isPublic 
-                    ? `<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full border border-green-200">開放觀禮</span>`
+                    ? `<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full border border-green-200">請依當年公告確認</span>`
                     : `<span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full border border-red-200">請確認開放方式</span>`;
 
                 html += `
