@@ -89,6 +89,15 @@
   document.querySelectorAll('input[name="tribe"]').forEach(x => x.addEventListener("change", () => {
     document.getElementById("select-all").checked = selectedTribes().length === tribes.length;
   }));
+  try {
+    const pending = JSON.parse(localStorage.getItem(pendingKey) || "null");
+    if (pending) {
+      setSelections(pending.tribes || []);
+      document.getElementById("consent").checked = pending.consent === true;
+    }
+  } catch {
+    localStorage.removeItem(pendingKey);
+  }
 
   async function saveSubscription(user, preferences) {
     const email = safeEmail(user.email);
@@ -121,16 +130,38 @@
     const email = localStorage.getItem(emailKey) || window.prompt("請輸入收到確認連結的信箱，以完成驗證：");
     if (email) {
       status("正在確認信箱…");
+      let result;
       try {
-        const result = await signInWithEmailLink(auth,safeEmail(email),window.location.href);
+        result = await signInWithEmailLink(auth,safeEmail(email),window.location.href);
+      } catch (error) {
+        console.error("Email-link sign-in failed",error);
+        const code = error?.code || "";
+        if (["auth/invalid-action-code","auth/expired-action-code","auth/invalid-email"].includes(code)) {
+          status("驗證連結已失效、已使用，或信箱不相符。請重新寄送連結，並用收到信的同一個信箱開啟最新一封。");
+        } else {
+          status("信箱驗證失敗（" + (code || "未知錯誤") + "）。請稍後重試，若持續發生請提供此錯誤代碼。");
+        }
+        result = null;
+      }
+      if (result) {
         localStorage.removeItem(emailKey);
         const saved = JSON.parse(localStorage.getItem(pendingKey) || "null");
         history.replaceState(null,"",window.location.pathname);
-        if (saved) await saveSubscription(result.user,saved);
-        else { emailInput.value = result.user.email || ""; status("信箱已確認。請選擇族群並送出，即可完成訂閱。"); }
-      } catch (error) {
-        console.error("Email-link sign-in failed",error);
-        status("確認連結無效或已過期。請回到表單重新寄送確認連結。");
+        if (saved) {
+          try {
+            await saveSubscription(result.user,saved);
+          } catch (error) {
+            console.error("Subscription save failed",error);
+            if (error?.code === "permission-denied") {
+              status("信箱已確認，但 Firestore 拒絕儲存訂閱（permission-denied）。請先部署 Firestore 規則；已保留你的選項，設定完成後可再送出。");
+            } else {
+              status("信箱已確認，但訂閱資料儲存失敗（" + (error?.code || "未知錯誤") + "）。已保留你的選項，請稍後再試。");
+            }
+          }
+        } else {
+          emailInput.value = result.user.email || "";
+          status("信箱已確認。請選擇族群並送出，即可完成訂閱。");
+        }
       }
     } else {
       status("請輸入原信箱，或回到表單重新寄送確認連結。");
