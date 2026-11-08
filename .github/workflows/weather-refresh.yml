@@ -39,6 +39,7 @@ jobs:
           git add weather.json
           if ! git diff --cached --quiet; then
             git commit -m "Refresh CWA township forecasts"
+            git pull --rebase origin main
             git push origin HEAD:main
           else
             echo "Weather data unchanged."
