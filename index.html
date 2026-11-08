@@ -238,7 +238,7 @@
             
             <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg mb-6 flex items-start">
                 <i class="fas fa-info-circle mt-1 mr-3 text-blue-500"></i>
-                <p class="text-sm">目前看板內容為示意資料，不能作為祭期預報。出發前請查詢中央氣象署當地預報；約15天後的天氣仍有不確定性，請在出發前再確認。</p>
+                <p class="text-sm">以下列出16族主要分布地區的中央氣象署鄉鎮預報入口。點入後請選擇祭典實際舉辦的鄉鎮；同一族可能分布多個縣市，山區與海岸天氣也可能不同。預報約更新並涵蓋未來一週，出發前請再次確認。</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="weather-container">
@@ -374,10 +374,23 @@
             {tribe:"卡那卡那富族",name:"米貢祭 Mikongu / 河祭",date:"依部落公告",location:"高雄市那瑪夏區",status:"schedule",isPublic:false,desc:"米貢祭與河祭是重要傳統祭儀，凝聚家族與部落共同參與。實際時程及觀禮規範應以卡那卡那富族部落公告為準。"}
         ];
 
-        const MOCK_WEATHER = [
-            { location: "阿里山鄉 (鄒族)", temp: "14°C - 20°C", rain: "60%", warning: "午後雷陣雨，請攜帶雨具", type: "rain" },
-            { location: "蘭嶼鄉 (達悟族)", temp: "26°C - 30°C", rain: "10%", warning: "紫外線過量，注意防曬", type: "sun" },
-            { location: "來義鄉 (排灣族)", temp: "22°C - 28°C", rain: "30%", warning: "山區路況多變，注意行車安全", type: "cloud" }
+        const WEATHER_LOCATIONS = [
+            {tribe:"阿美族",areas:"花蓮縣、臺東縣（東海岸、縱谷及平原部落）"},
+            {tribe:"泰雅族",areas:"新北市、桃園市、新竹縣、苗栗縣、臺中市、宜蘭縣"},
+            {tribe:"排灣族",areas:"屏東縣、臺東縣"},
+            {tribe:"布農族",areas:"南投縣、花蓮縣、臺東縣、高雄市"},
+            {tribe:"卑南族",areas:"臺東縣臺東市及周邊部落"},
+            {tribe:"魯凱族",areas:"屏東縣、臺東縣、高雄市"},
+            {tribe:"鄒族",areas:"嘉義縣阿里山鄉、高雄市桃源區"},
+            {tribe:"賽夏族",areas:"新竹縣五峰鄉、苗栗縣南庄鄉"},
+            {tribe:"雅美族（達悟族）",areas:"臺東縣蘭嶼鄉各部落"},
+            {tribe:"邵族",areas:"南投縣魚池鄉（日月潭周邊）"},
+            {tribe:"噶瑪蘭族",areas:"花蓮縣新社等部落、臺東縣"},
+            {tribe:"太魯閣族",areas:"花蓮縣、南投縣"},
+            {tribe:"撒奇萊雅族",areas:"花蓮縣花蓮市、豐濱鄉等地"},
+            {tribe:"賽德克族",areas:"南投縣仁愛鄉、花蓮縣萬榮鄉及秀林鄉"},
+            {tribe:"拉阿魯哇族",areas:"高雄市桃源區"},
+            {tribe:"卡那卡那富族",areas:"高雄市那瑪夏區"}
         ];
 
         // ----------------------------------------------------------------------
@@ -491,27 +504,17 @@
         // 渲染氣象預報
         function renderWeather() {
             const container = document.getElementById('weather-container');
-            let html = '';
-            MOCK_WEATHER.forEach(w => {
-                let icon = '';
-                let colorClass = '';
-                if(w.type === 'rain') { icon = 'fa-cloud-showers-heavy'; colorClass = 'text-blue-500'; }
-                else if(w.type === 'sun') { icon = 'fa-sun'; colorClass = 'text-orange-500'; }
-                else { icon = 'fa-cloud'; colorClass = 'text-gray-500'; }
-
-                html += `
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col items-center text-center">
-                        <h3 class="font-bold text-gray-800 mb-2">${w.location}</h3>
-                        <i class="fas ${icon} text-4xl ${colorClass} my-3"></i>
-                        <div class="text-2xl font-bold text-gray-800 mb-1">${w.temp}</div>
-                        <div class="text-sm text-gray-500 mb-4">降雨機率: <span class="font-bold">${w.rain}</span></div>
-                        <div class="bg-stone-100 text-xs text-gray-700 p-2 rounded w-full">
-                            <i class="fas fa-bell text-gold mr-1"></i> ${w.warning}
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
+            const cwaTownForecast = 'https://www.cwa.gov.tw/V8/C/W/Town/index.html';
+            container.innerHTML = WEATHER_LOCATIONS.map(item => `
+                <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col">
+                    <h3 class="font-bold text-gray-800 mb-2">${item.tribe}</h3>
+                    <p class="text-sm text-gray-600 mb-4">${item.areas}</p>
+                    <a class="mt-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 font-medium text-sm px-4 py-3"
+                       href="${cwaTownForecast}" target="_blank" rel="noopener noreferrer">
+                        <i class="fas fa-cloud-sun"></i>開啟中央氣象署鄉鎮預報
+                    </a>
+                </article>
+            `).join('');
         }
 
         // ----------------------------------------------------------------------
