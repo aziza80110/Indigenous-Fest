@@ -1,0 +1,32 @@
+name: Deploy Firebase Firestore rules
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Prepare Firebase service credentials
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          raw = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON", "")
+          if not raw.strip():
+              raise SystemExit("Missing FIREBASE_SERVICE_ACCOUNT_JSON repository secret")
+          Path(".firebase-service-account.json").write_text(raw, encoding="utf-8")
+          PY
+      - name: Deploy Firestore security rules
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.firebase-service-account.json
+        run: npx --yes firebase-tools deploy --only firestore:rules --project taiwan-indigenous-festivals
