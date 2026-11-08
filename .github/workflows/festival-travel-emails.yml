@@ -1,0 +1,90 @@
+name: 祭典旅遊規劃通知
+
+on:
+  pull_request:
+  schedule:
+    - cron: "17 9 * * *"
+      timezone: Asia/Taipei
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: festival-travel-email-scheduler
+  cancel-in-progress: false
+
+jobs:
+  test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r automation/requirements.txt
+      - run: python -m unittest discover -s tests -v
+
+  preview:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r automation/requirements.txt
+      - name: 預覽今日符合條件的活動（不寄信）
+        run: python automation/send_travel_emails.py preview
+
+  scheduled-send:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: automation-state
+          path: .automation-state
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r automation/requirements.txt
+      - name: 建立待寄送紀錄
+        env:
+          TRIP_EMAIL_TO: ${{ secrets.TRIP_EMAIL_TO }}
+        run: python automation/send_travel_emails.py claim --state .automation-state/mail-delivery-state.json
+      - name: 保存待寄送紀錄
+        run: |
+          git -C .automation-state config user.name "github-actions[bot]"
+          git -C .automation-state config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C .automation-state add mail-delivery-state.json
+          if ! git -C .automation-state diff --cached --quiet; then
+            git -C .automation-state commit -m "Record festival email claims"
+            git -C .automation-state push origin HEAD:automation-state
+          fi
+      - name: 寄送通知
+        id: send
+        continue-on-error: true
+        env:
+          TRIP_EMAIL_TO: ${{ secrets.TRIP_EMAIL_TO }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          CWA_AUTHORIZATION: ${{ secrets.CWA_AUTHORIZATION }}
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+          TRIP_ORIGIN: ${{ vars.TRIP_ORIGIN }}
+        run: python automation/send_travel_emails.py send --state .automation-state/mail-delivery-state.json
+      - name: 保存寄送結果
+        if: always()
+        run: |
+          git -C .automation-state add mail-delivery-state.json
+          if ! git -C .automation-state diff --cached --quiet; then
+            git -C .automation-state commit -m "Record festival email results"
+            git -C .automation-state push origin HEAD:automation-state
+          fi
+      - name: 標記寄送失敗
+        if: steps.send.outcome == 'failure'
+        run: exit 1
