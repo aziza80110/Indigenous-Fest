@@ -1,0 +1,120 @@
+{
+  "title": "臺灣原住民族16族簡介",
+  "sourceTitle": "原住民族委員會原住民族16族簡介與各族資料",
+  "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/index.html?cumid=8F19BF08AE220D65",
+  "checkedAt": "2026-11-08",
+  "tribes": [
+    {
+      "name": "阿美族",
+      "englishName": "Amis",
+      "otherNames": "Pangcah（邦查）",
+      "introduction": "主要分布於花蓮、臺東及恆春半島，部落依海岸、縱谷與平原形成不同生活傳統。Pangcah一詞有「人、同族人」之意；年齡階級、家族關係、歌舞與歲時祭儀共同維繫部落公共生活。豐年祭不只是慶祝收成，也包含謝神、社交、年齡階級活動與文化傳承。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/DBADF0287998968BD0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "泰雅族",
+      "englishName": "Atayal",
+      "otherNames": "Tayal",
+      "introduction": "分布於臺灣北部與中部山區。gaga是祖先傳下的規範與生活準則，影響農作、狩獵、人際互助和祭儀；織布、部落互助勞動與祖靈祭都呈現族人如何在日常生活中延續規範。各地語群、祭名和儀式有所差異。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/8C87B4AF56B788EED0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "排灣族",
+      "englishName": "Paiwan",
+      "otherNames": "—",
+      "introduction": "主要分布於屏東、臺東的大武山兩側。家名、家族與階序關係深刻影響社會、婚姻、祭儀與藝術；石板屋、琉璃珠、陶壺和百步蛇紋飾是重要文化表現。小米收穫祭與五年祭各有不同意義，五年祭只由部分部落依自身週期舉行。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/67E3CC5AE2F10A8BD0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "布農族",
+      "englishName": "Bunun",
+      "otherNames": "—",
+      "introduction": "原鄉沿中央山脈兩側分布，跨南投、花蓮、臺東與高雄。小米農作、山林知識、狩獵及祭儀相互連結；射耳祭包含祈求狩獵與農作豐收、青年學習和部落凝聚。祈禱小米豐收歌pasibutbut以多聲部合唱聞名。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/F39C8394699DD2D6D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "卑南族",
+      "englishName": "Puyuma",
+      "otherNames": "Pinuyumayan（部分族人倡用）",
+      "introduction": "主要分布於臺東平原及周邊部落。年齡階級與會所制度是重要社會組織；農事祭儀與個人生命歷程祭儀並行。婦女除草完工慶、小米收穫祭、猴祭及大獵祭各有不同角色與流程，不能以單一部落經驗代表全族。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/913F9B9D35D49AC3D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "魯凱族",
+      "englishName": "Rukai",
+      "otherNames": "Ngudradrekai",
+      "introduction": "部落分布於中央山脈南段、屏東、臺東及高雄一帶。社會階序、家族、婚姻、藝術和祭儀相互連結；小米文化、石板屋與百合花意象具有代表性。東魯凱、西魯凱及下三社在語言、社會制度與文化表徵上各具特色。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/409F703B4E592A82D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "鄒族",
+      "englishName": "Tsou",
+      "otherNames": "Cou",
+      "introduction": "主要分布於阿里山及鄰近山區，也有部落位於南投與高雄。大社與小社構成部落網絡，男子集會所kuba是教育、議事、社交與祭儀的重要空間。Homeyaya感謝收成；Mayasvi戰祭由不同大社依各自傳統舉行。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/AE6EE12F5F284D59D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "賽夏族",
+      "englishName": "Saisiyat",
+      "otherNames": "Saysiyat",
+      "introduction": "主要居住於新竹五峰、苗栗南庄及鄰近地區，社會以氏族、祭團與互助關係為基礎。巴斯達隘paSta'ay與矮靈信仰及部落歷史記憶相連，南、北賽夏各有祭團傳承。祭典具有嚴謹禁忌，參訪、拍攝與錄音須遵守當年主辦規範。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/8DF9561F4FCC6AF4D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "雅美族（達悟族）",
+      "englishName": "Yami",
+      "otherNames": "Tao（達悟）",
+      "introduction": "居住於臺東蘭嶼各部落，海洋知識與生活曆法緊密相連。拼板舟、半地下屋、飛魚季和各階段飲食禁忌呈現族人對海洋資源的理解；招魚、收藏與終食祭儀標記漁季不同階段，應遵守漁團和部落規範。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/5839F78F6C869EE4D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "邵族",
+      "englishName": "Thao",
+      "otherNames": "—",
+      "introduction": "主要居住於南投魚池鄉日月潭伊達邵及水里大坪林。祖靈信仰以祖靈籃Ulalaluan為重要象徵，女祭司是族人與祖靈之間的重要媒介。播種祭、狩獵祭及祖靈祭依農曆時序進行，祭儀歌謠與氏族分工由族人傳承。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/3343FD21497CA007D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "噶瑪蘭族",
+      "englishName": "Kavalan",
+      "otherNames": "Kebalan",
+      "introduction": "族人原居宜蘭平原，歷史變遷後分布於花蓮、臺東海岸。海洋生活、航海交換、編織香蕉絲與祭祖傳統是文化特色；海祭Laligi由各部落依自己的時間舉行，以祭告祖靈與掌管海洋的神靈，地點和內容並不完全相同。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/7088C08FB51F3383D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "太魯閣族",
+      "englishName": "Truku",
+      "otherNames": "Taroko",
+      "introduction": "主要分布於花蓮山區及南投部分地區。gaya是祖先留下的生活規範，與家庭、共獵、共祭及群體責任相連；織布與山林知識也是重要文化實踐。Mgay Bari感恩祭在小米收割後舉行，日期與祭儀由部落長老商議。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/F0736660B8023670D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "撒奇萊雅族",
+      "englishName": "Sakizaya",
+      "otherNames": "—",
+      "introduction": "以花蓮平原為主要分布地。1878年達固部灣事件造成重大傷亡、遷徙與文化隱匿，後續的復名和文化復振凝聚族群認同。火神祭Palamal追念事件中的犧牲者與傳統領袖，也讓散居各地的族人重新聚集。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/588FAD20D4E16D65D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "賽德克族",
+      "englishName": "Seediq",
+      "otherNames": "Sediq / Sejiq",
+      "introduction": "分布於南投仁愛及花蓮萬榮、秀林等地。gaya作為祖訓與生活準則，影響族人與祖靈、家族及部落的關係；織布與山林生活知識代代相傳。Mgay Bari等祭儀由各部落依小米農事、祖靈信仰及地方傳統安排。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/F35F3EBC7CE2E1BCD0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "拉阿魯哇族",
+      "englishName": "Hla’alua",
+      "otherNames": "—",
+      "introduction": "主要居住於高雄桃源區及那瑪夏區，傳統社群包括排剪、美壠、塔蠟、雁爾等社。小米、旱稻農事和祭儀緊密相連；聖貝祭Miatungusu以takiarʉ聖貝為核心，展現族人對貝神、祖先和部落安康的敬意。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/DE7E75BDD1F53F90D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "卡那卡那富族",
+      "englishName": "Kanakanavu",
+      "otherNames": "—",
+      "introduction": "主要分布於高雄那瑪夏南梓仙溪流域。卡那卡那富族與鄒族、拉阿魯哇族曾長期被合稱，後因語言、歷史與文化差異而獲獨立族群認定。米貢祭Mikongu及河祭pasiakarai延續小米農作、家庭與河川生活的文化記憶。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/91A2A514F76BAEACD0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    }
+  ]
+}
