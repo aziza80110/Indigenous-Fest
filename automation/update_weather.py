@@ -27,11 +27,17 @@ def first_value(location: dict, names: set[str]) -> str:
         if isinstance(values, dict):
             values = [values]
         for item in values:
-            value = item.get("Value", item.get("value"))
-            if value not in (None, ""):
-                return str(value)
+            if not isinstance(item, dict):
+                continue
+            # CWA township responses use field-specific keys such as Weather,
+            # MinTemperature and ProbabilityOfPrecipitation instead of Value.
+            candidates = [item.get("Value"), item.get("value")]
+            candidates.extend(item.get(name) for name in names)
+            candidates.extend(item.values())
+            for value in candidates:
+                if value not in (None, "") and not isinstance(value, (dict, list)):
+                    return str(value)
     return ""
-
 
 def first_time(location: dict) -> tuple[str, str]:
     for element in location.get("WeatherElement", []):
