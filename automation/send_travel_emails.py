@@ -18,6 +18,20 @@ from zoneinfo import ZoneInfo
 
 TAIPEI = ZoneInfo("Asia/Taipei")
 CWA_BASE = "https://opendata.cwa.gov.tw/api/v1/rest/datastore"
+CWA_DATASET_BY_COUNTY = {
+    "宜蘭縣": "F-D0047-003",
+    "桃園市": "F-D0047-007",
+    "新竹縣": "F-D0047-011",
+    "苗栗縣": "F-D0047-015",
+    "南投縣": "F-D0047-023",
+    "嘉義縣": "F-D0047-031",
+    "屏東縣": "F-D0047-035",
+    "臺東縣": "F-D0047-039",
+    "花蓮縣": "F-D0047-043",
+    "高雄市": "F-D0047-067",
+    "新北市": "F-D0047-071",
+    "臺中市": "F-D0047-075",
+}
 PLACES_URL = "https://places.googleapis.com/v1/places:searchText"
 DEFAULT_EVENTS = Path("automation/festivals.json")
 DEFAULT_STATE = Path("automation/mail-delivery-state.json")
@@ -111,14 +125,17 @@ def claim_due(events: list[dict[str, Any]], state: dict[str, Any], today: date,
     return claimed
 
 
-def cwa_forecast(town: str) -> dict[str, Any]:
+def cwa_forecast(town: str, county: str = "") -> dict[str, Any]:
     import requests
 
     token = os.getenv("CWA_AUTHORIZATION", "").strip()
     if not token:
         return {"status": "not_configured", "message": "尚未設定中央氣象署授權碼"}
+    dataset = CWA_DATASET_BY_COUNTY.get(county)
+    if not dataset:
+        return {"status": "unavailable", "message": f"活動資料未提供可查詢的縣市：{county or '未指定'}"}
     response = requests.get(
-        f"{CWA_BASE}/F-D0047-093",
+        f"{CWA_BASE}/{dataset}",
         params={"Authorization": token, "format": "JSON", "LocationName": town},
         timeout=15,
     )
@@ -185,7 +202,7 @@ def format_places(payload: dict[str, Any]) -> str:
 def build_brief(event: dict[str, Any], stage: str, today: date) -> str:
     start = date.fromisoformat(event["startDate"])
     days_until = (start - today).days
-    weather = cwa_forecast(event["town"]) if days_until <= 7 else {
+    weather = cwa_forecast(event["town"], event.get("county", "")) if days_until <= 7 else {
         "status": "forecast_window_exceeded",
         "message": f"中央氣象署鄉鎮預報目前不涵蓋 {event['startDate']}；請於出發前7天內再查最新預報。",
     }
