@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="訂閱台灣原住民族祭典行程通知，選擇關注族群並隨時取消訂閱。">
+  <title>祭典通知訂閱｜台灣原住民祭典規劃</title>
+  <style>
+    :root{--terra:#9e3a26;--forest:#2d5a43;--cream:#fafaf9;--ink:#292524}
+    *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Noto Sans TC",sans-serif}
+    header{background:var(--terra);color:white;padding:1rem clamp(1rem,4vw,3rem)}header a{color:white}
+    main{max-width:820px;margin:2rem auto;padding:0 1rem 3rem}.card{background:white;border-radius:18px;padding:clamp(1.1rem,4vw,2rem);box-shadow:0 5px 24px #29252412}
+    h1{color:var(--forest);margin-top:0}.hint{color:#57534e;font-size:.94rem}.group{border:1px solid #d6d3d1;border-radius:12px;padding:1rem;margin:1.2rem 0}
+    .choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.5rem 1rem}.choices label{display:flex;gap:.55rem;align-items:flex-start}
+    input[type=email]{width:100%;padding:.8rem;border:1px solid #a8a29e;border-radius:8px;font:inherit}
+    input[type=checkbox]{width:1.1rem;height:1.1rem;accent-color:var(--forest);margin-top:.2rem}
+    button{background:var(--forest);color:white;border:0;border-radius:9px;padding:.85rem 1.2rem;font:inherit;font-weight:700;cursor:pointer}
+    button:disabled{opacity:.6;cursor:wait}.status{margin-top:1rem;padding:.8rem 1rem;border-radius:8px;background:#eff6ff;color:#1e3a8a;min-height:2.5rem}
+    .consent{display:flex;align-items:flex-start;gap:.6rem;margin:1rem 0}.back{display:inline-block;margin:1rem 0;color:var(--terra)}
+    .unsubscribe{border-top:1px solid #e7e5e4;margin-top:1.4rem;padding-top:1rem;font-size:.9rem;color:#57534e}
+  </style>
+</head>
+<body>
+<header><strong>🔮 台灣原住民祭典規劃</strong>　<a href="./">回網站首頁</a></header>
+<main>
+  <section class="card">
+    <h1>訂閱祭典旅遊通知</h1>
+    <p>選擇想收到通知的族群。只在找到可核實的官方祭典日期並進入寄送時程時，寄送祭典日期、交通、天氣與旅遊規劃資訊。此訂閱只用於祭典旅遊通知，不會代訂或付款。</p>
+    <p class="hint">送出後，Firebase 會寄一封登入確認連結到你填寫的信箱。點開後才會完成訂閱；請在同一瀏覽器開啟連結，若換裝置會請你再次輸入信箱。此網站使用 GitHub Pages 與 Firebase。</p>
+    <form id="subscription-form">
+      <label for="email"><strong>電子郵件</strong></label>
+      <input id="email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="name@example.com">
+      <fieldset class="group">
+        <legend><strong>選擇祭典通知</strong></legend>
+        <label style="display:flex;gap:.55rem;margin:.3rem 0 1rem"><input id="select-all" type="checkbox"> 全部16族</label>
+        <div class="choices" id="tribe-choices"></div>
+      </fieldset>
+      <label class="consent"><input id="consent" type="checkbox" required><span>我同意使用此信箱及所選族群偏好寄送祭典旅遊通知，並知道可透過每封通知中的取消連結停止收信。</span></label>
+      <button id="subscribe-button" type="submit">寄送信箱確認連結</button>
+    </form>
+    <div id="status" class="status" role="status" aria-live="polite">準備就緒。</div>
+    <div class="unsubscribe"><strong>取消訂閱</strong><br>收到的每封祭典通知都會附有專屬取消連結，點開即可停止後續通知。若你要管理或更新通知族群，請重新輸入信箱並完成確認連結。</div>
+    <a class="back" href="./">← 回網站首頁</a>
+  </section>
+</main>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { getFirestore, collection, doc, getDoc, getDocs, query, where, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAXnDhxZfA6RYA0mLQXUEs1Iq5JnNHN_20",
+    authDomain: "taiwan-indigenous-festivals.firebaseapp.com",
+    projectId: "taiwan-indigenous-festivals",
+    storageBucket: "taiwan-indigenous-festivals.firebasestorage.app",
+    messagingSenderId: "430162411739",
+    appId: "1:430162411739:web:64c31838c2bd6c8632ccfe",
+    measurementId: "G-VTSCTM8Y9C"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const tribes = ["阿美族","泰雅族","排灣族","布農族","卑南族","魯凱族","鄒族","賽夏族","雅美族（達悟族）","邵族","噶瑪蘭族","太魯閣族","撒奇萊雅族","賽德克族","拉阿魯哇族","卡那卡那富族"];
+  const form = document.getElementById("subscription-form");
+  const emailInput = document.getElementById("email");
+  const statusBox = document.getElementById("status");
+  const submitButton = document.getElementById("subscribe-button");
+  const pendingKey = "festivalSubscriptionPending";
+  const emailKey = "festivalSubscriptionEmail";
+  let currentUser = null;
+
+  const status = message => { statusBox.textContent = message; };
+  const safeEmail = value => String(value || "").trim().toLowerCase();
+  const selectedTribes = () => [...document.querySelectorAll('input[name="tribe"]:checked')].map(x => x.value);
+  const setSelections = values => {
+    const all = values.includes("all");
+    document.getElementById("select-all").checked = all;
+    document.querySelectorAll('input[name="tribe"]').forEach(x => { x.checked = all || values.includes(x.value); });
+  };
+  const savePending = () => localStorage.setItem(pendingKey, JSON.stringify({ tribes: selectedTribes(), consent: document.getElementById("consent").checked }));
+  const tokenId = () => [...crypto.getRandomValues(new Uint8Array(32))].map(x => x.toString(16).padStart(2,"0")).join("");
+
+  document.getElementById("tribe-choices").innerHTML = tribes.map((name,i) =>
+    '<label><input type="checkbox" name="tribe" value="' + name.replaceAll('"','&quot;') + '"> <span>' + name + '</span></label>'
+  ).join("");
+  document.getElementById("select-all").addEventListener("change", e => {
+    document.querySelectorAll('input[name="tribe"]').forEach(x => { x.checked = e.target.checked; });
+  });
+  document.querySelectorAll('input[name="tribe"]').forEach(x => x.addEventListener("change", () => {
+    document.getElementById("select-all").checked = selectedTribes().length === tribes.length;
+  }));
+
+  async function saveSubscription(user, preferences) {
+    const email = safeEmail(user.email);
+    const choices = preferences?.tribes || [];
+    if (!user.emailVerified || !email) throw new Error("此信箱尚未完成驗證，請重新寄送確認連結。");
+    if (!preferences?.consent || !choices.length) throw new Error("請至少選擇一個族群並勾選同意事項。");
+    const value = choices.length === tribes.length ? ["all"] : choices;
+    const own = await getDocs(query(collection(db,"mailSubscriptions"),where("email","==",email)));
+    const existing = own.docs.find(s => s.data().active === true);
+    if (existing) {
+      await updateDoc(existing.ref,{tribes:value,active:true,consentedAt:serverTimestamp()});
+    } else {
+      const token = tokenId();
+      await setDoc(doc(db,"mailSubscriptions",token),{
+        email,tribes:value,active:true,consent:true,consentVersion:"2026-11-09",
+        consentedAt:serverTimestamp(),verifiedAt:serverTimestamp(),createdAt:serverTimestamp()
+      });
+    }
+    localStorage.removeItem(pendingKey);
+    localStorage.removeItem(emailKey);
+    status("訂閱已完成。之後符合你選擇的祭典通知會寄到此信箱；每封信都可取消訂閱。");
+  }
+
+  onAuthStateChanged(auth, user => {
+    currentUser = user;
+    if (user?.email && user.emailVerified) emailInput.value = user.email;
+  });
+
+  if (isSignInWithEmailLink(auth, window.location.href)) {
+    const email = localStorage.getItem(emailKey) || window.prompt("請輸入收到確認連結的信箱，以完成驗證：");
+    if (email) {
+      status("正在確認信箱…");
+      try {
+        const result = await signInWithEmailLink(auth,safeEmail(email),window.location.href);
+        localStorage.removeItem(emailKey);
+        const saved = JSON.parse(localStorage.getItem(pendingKey) || "null");
+        history.replaceState(null,"",window.location.pathname);
+        if (saved) await saveSubscription(result.user,saved);
+        else { emailInput.value = result.user.email || ""; status("信箱已確認。請選擇族群並送出，即可完成訂閱。"); }
+      } catch (error) {
+        console.error("Email-link sign-in failed",error);
+        status("確認連結無效或已過期。請回到表單重新寄送確認連結。");
+      }
+    } else {
+      status("請輸入原信箱，或回到表單重新寄送確認連結。");
+    }
+  }
+
+  const unsubscribeToken = new URLSearchParams(location.search).get("unsubscribe");
+  if (unsubscribeToken) {
+    history.replaceState(null,"",location.pathname);
+    if (!/^[a-f0-9]{64}$/.test(unsubscribeToken)) {
+      status("取消連結格式無效。");
+    } else {
+      try {
+        const reference = doc(db,"mailSubscriptions",unsubscribeToken);
+        const saved = await getDoc(reference);
+        if (!saved.exists()) status("找不到這筆訂閱，可能已取消或連結已失效。");
+        else if (!saved.data().active) status("這筆訂閱已經取消。");
+        else {
+          await updateDoc(reference,{active:false,unsubscribedAt:serverTimestamp()});
+          status("已取消訂閱。這個信箱不會再收到後續祭典通知。");
+        }
+      } catch (error) {
+        console.error("Unsubscribe failed",error);
+        status("目前無法完成取消。請稍後重試，或來信 aziza80120@gmail.com 請求取消。");
+      }
+    }
+  }
+
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+    const email = safeEmail(emailInput.value);
+    const choices = selectedTribes();
+    const consent = document.getElementById("consent").checked;
+    if (!choices.length || !consent) { status("請至少選擇一個族群，並勾選同意事項。"); return; }
+    const preferences = {tribes:choices,consent};
+    try {
+      submitButton.disabled = true;
+      if (currentUser?.emailVerified && safeEmail(currentUser.email) === email) {
+        await saveSubscription(currentUser,preferences);
+      } else {
+        localStorage.setItem(emailKey,email);
+        localStorage.setItem(pendingKey,JSON.stringify(preferences));
+        const actionCodeSettings = {url:new URL("subscribe.html",location.href).href,handleCodeInApp:true};
+        await sendSignInLinkToEmail(auth,email,actionCodeSettings);
+        status("確認連結已寄出。請到信箱點擊連結完成訂閱；未完成驗證前不會加入通知名單。");
+      }
+    } catch (error) {
+      console.error("Subscription request failed",error);
+      status("目前無法送出。請確認 Firebase 已啟用「電子郵件連結登入」，稍後再試。");
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
