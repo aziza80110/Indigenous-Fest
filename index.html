@@ -107,7 +107,7 @@
             <!-- 導覽 Tabs -->
             <div class="flex flex-wrap justify-center gap-2 md:gap-4 mt-8">
                 <button onclick="switchTab('encyclopedia')" id="tab-btn-encyclopedia" class="tab-btn px-6 py-3 rounded-full bg-white text-forest font-bold shadow-md hover:bg-gray-100 transition-all">
-                    <i class="fas fa-book-open mr-2"></i>17族百科
+                    <i class="fas fa-book-open mr-2"></i>16族百科
                 </button>
                 <button onclick="switchTab('calendar')" id="tab-btn-calendar" class="tab-btn px-6 py-3 rounded-full bg-transparent border border-white text-white font-bold hover:bg-white/10 transition-all">
                     <i class="fas fa-calendar-alt mr-2"></i>祭典行事曆
@@ -130,7 +130,7 @@
 
         <!-- Tab 1: 17 族百科與禁忌 -->
         <section id="tab-encyclopedia" class="tab-content active">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-primary inline-block pb-2">台灣 17 原住民族圖鑑</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-primary inline-block pb-2">臺灣原住民族16族圖鑑</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tribes-container">
                 <!-- Tribe Cards injected via JS -->
             </div>
@@ -333,101 +333,43 @@
         // ----------------------------------------------------------------------
         // 2. Mock 靜態資料結構 (代替完整 DB 以利單一檔案運作)
         // ----------------------------------------------------------------------
+        // 官方認定16族；祭儀時序僅列常見季節，確切日期及開放範圍以主辦部落當年公告為準。
         const MOCK_TRIBES = [
-            {
-                id: "amis", name: "阿美族", romanizedName: "Amis / Pangcah",
-                regions: ["花蓮縣", "臺東縣", "屏東縣"],
-                summary: "母系社會，以豐年祭(Ilisin)、年齡階級組織及優美的歌舞聞名。為台灣人口最多的原住民族。",
-                culturalTaboos: [
-                    "豐年祭部分神聖祭儀（如迎靈）嚴禁女性及外人靠近或觸摸祭具。",
-                    "進入部落請勿隨意拍攝私人住宅或未經同意拍攝族人特寫。",
-                    "遵守部落場地規劃，勿跨越拉起的封鎖線。"
-                ],
-                iconSymbol: "☀️", color: "border-red-500"
-            },
-            {
-                id: "paiwan", name: "排灣族", romanizedName: "Paiwan",
-                regions: ["屏東縣", "臺東縣"],
-                summary: "擁有嚴謹的階級制度，以百步蛇圖騰、石板屋、琉璃珠與精緻木雕工藝文化聞名。",
-                culturalTaboos: [
-                    "未經頭目或耆老許可，切勿觸摸石板屋內之祖靈柱。",
-                    "祭場神聖區域女性或外人依祭典規範有進出限制。",
-                    "百步蛇為神聖象徵，切勿語出不敬。"
-                ],
-                iconSymbol: "🐍", color: "border-gray-800"
-            },
-            {
-                id: "tayal", name: "泰雅族", romanizedName: "Atayal / Tayal",
-                regions: ["新北市", "桃園市", "新竹縣", "苗栗縣", "臺中市", "宜蘭縣"],
-                summary: "以 GAGA 信仰、紋面文化及精湛的編織技術(苧麻編織)著稱，傳統居屋多半穴居或竹屋。",
-                culturalTaboos: [
-                    "祖靈祭(Smahet)多屬不對外開放之內部祭儀，請勿強求參與。",
-                    "進入獵區或山林，禁止喧嘩及隨意破壞植物，需抱持敬畏之心。",
-                    "不可隨意觸摸獵具或男性的武器。"
-                ],
-                iconSymbol: "🧶", color: "border-red-700"
-            },
-            {
-                id: "bunun", name: "布農族", romanizedName: "Bunun",
-                regions: ["南投縣", "花蓮縣", "臺東縣", "高雄市"],
-                summary: "典型的高山族群，以八部合音(Pasibutbut)、打耳祭(Malahtangia)及狩獵文化聞名世界。",
-                culturalTaboos: [
-                    "祭典期間嚴禁孕婦、守喪者參與或靠近特定儀式。",
-                    "打耳祭射箭場地嚴禁非相關人員進入，尤忌隨意觸摸弓箭。",
-                    "入山前有嚴格的夢占與鳥占禁忌，訪客應尊重部落決定。"
-                ],
-                iconSymbol: "🏹", color: "border-green-700"
-            },
-            {
-                id: "tao", name: "達悟族", romanizedName: "Tao / Yami",
-                regions: ["臺東縣蘭嶼鄉"],
-                summary: "台灣唯一海洋原住民族，以飛魚祭、拼板舟及半地下屋文化為特色，展現與海洋共生的智慧。",
-                culturalTaboos: [
-                    "飛魚祭期間嚴禁向海拋擲石頭、下水遊玩或觸摸拼板舟。",
-                    "未經同意絕對禁止拍攝拼板舟內部及族人。",
-                    "橘子被視為不吉利的水果，請勿帶至海邊或祭典現場。"
-                ],
-                iconSymbol: "🐟", color: "border-blue-500"
-            },
-             {
-                id: "siraya", name: "西拉雅族", romanizedName: "Siraya",
-                regions: ["臺南市", "花蓮縣(部分)"],
-                summary: "台灣平埔族群中人口最多者，以阿立祖信仰、夜祭及獨特的公廨建築文化傳承至今。",
-                culturalTaboos: [
-                    "夜祭進行時，需保持肅穆，禁止喧嘩及隨意穿越祭場。",
-                    "公廨為神聖場所，未經允許不得隨意進入或觸碰祭器(如向水、祀壺)。",
-                    "尊重族人正名運動，以『西拉雅族』稱呼，避免使用貶抑詞彙。"
-                ],
-                iconSymbol: "🏺", color: "border-orange-500"
-            }
+            {id:"amis",name:"阿美族",romanizedName:"Amis / Pangcah",regions:["花蓮縣","臺東縣"],summary:"部落分布於東部海岸、縱谷與平原；以年齡組織、歌舞及豐年祭維繫部落互助與文化傳承。",culturalTaboos:["祭典各階段規範由部落訂定，先確認是否開放觀禮。","拍攝族人、祭儀及家屋前先徵得同意。","依主辦方動線與指引行動，不擅闖管制區。"],iconSymbol:"☀️",color:"border-red-500"},
+            {id:"tayal",name:"泰雅族",romanizedName:"Tayal / Atayal",regions:["新北市","桃園市","新竹縣","苗栗縣","臺中市","宜蘭縣"],summary:"以gaga（祖訓與規範）、織布與傳統紋面文化著稱；部落分布跨越北部及中部山區。",culturalTaboos:["祖靈祭及家族儀式多有內部規範，未獲邀請不要求參與。","進入部落及山林前先洽詢在地接待者。","不觸碰祭具、獵具或私人家屋物品。"],iconSymbol:"🧶",color:"border-red-700"},
+            {id:"paiwan",name:"排灣族",romanizedName:"Paiwan",regions:["屏東縣","臺東縣"],summary:"家名、家族與階序關係形塑社會生活；石板屋、琉璃珠、陶壺與百步蛇意象展現豐富藝術傳統。",culturalTaboos:["依部落規範參與小米收穫祭或五年祭，神聖儀式可能不開放。","石板屋、祖靈柱及工藝品未經同意不可觸摸。","拍攝或分享祭儀影像前，先詢問主辦者。"],iconSymbol:"🐍",color:"border-gray-800"},
+            {id:"bunun",name:"布農族",romanizedName:"Bunun",regions:["南投縣","花蓮縣","臺東縣","高雄市"],summary:"分布於中央山脈兩側；以八部合音、狩獵知識及配合農事歲時的祭儀聞名。",culturalTaboos:["打耳祭等儀式可能設有參與限制，依部落當年公告。","射箭場、祭場及祭具非開放區域請勿進入或觸碰。","尊重部落的狩獵、山林與拍攝規範。"],iconSymbol:"🏹",color:"border-green-700"},
+            {id:"puyuma",name:"卑南族",romanizedName:"Puyuma / Pinuyumayan",regions:["臺東縣臺東市及周邊"],summary:"以年齡階級、會所制度與歲時祭儀維繫部落社會；大獵祭、猴祭等各有特定傳承脈絡。",culturalTaboos:["猴祭、大獵祭等有部落內部儀程，先確認觀禮規範。","會所、祭場及祭具依主辦者指示參訪。","勿將不同部落祭儀混為單一固定版本。"],iconSymbol:"🌾",color:"border-amber-700"},
+            {id:"rukai",name:"魯凱族",romanizedName:"Rukai",regions:["屏東縣","臺東縣","高雄市"],summary:"部落分布於中央山脈南段；石板屋、百合花、陶壺與小米文化是重要文化意象。",culturalTaboos:["小米收穫祭等祭儀由各部落安排，先確認對外開放資訊。","不觸摸家屋、祖靈象徵及展示中的祭器。","尊重部落階序、耆老與地主的接待指引。"],iconSymbol:"🪨",color:"border-stone-600"},
+            {id:"cou",name:"鄒族",romanizedName:"Cou / Tsou",regions:["嘉義縣阿里山鄉","高雄市桃源區"],summary:"以男子集會所mayasvi（戰祭）及歲時祭儀聞名；鄒族內部各社群與部落傳統各有特色。",culturalTaboos:["Mayasvi為重要祭儀，觀禮資格與區域依部落公告。","男子集會所及祭場未經邀請不可進入。","聆聽主辦者對攝影、服裝與動線的說明。"],iconSymbol:"🌲",color:"border-emerald-700"},
+            {id:"saisiyat",name:"賽夏族",romanizedName:"Saisiyat",regions:["新竹縣五峰鄉","苗栗縣南庄鄉"],summary:"以矮靈祭pas-ta'ai及複音祭歌著稱；祭典週期與儀程由南、北賽夏部落傳統共同維護。",culturalTaboos:["矮靈祭有嚴謹禁忌與儀程，未獲許可不得錄音、攝影或加入舞列。","遵守祭場公告與主辦者指示，不跨越界線。","祭期與參訪名額依當年部落公告，不以舊資料推定。"],iconSymbol:"🎶",color:"border-indigo-700"},
+            {id:"tao",name:"雅美族（達悟族）",romanizedName:"Tao / Yami",regions:["臺東縣蘭嶼鄉"],summary:"以海洋生活、拼板舟、地下屋及飛魚文化展現與海共存的知識；島上各部落有自身規範。",culturalTaboos:["飛魚季各階段禁忌不同，遵守部落及漁團公告。","未經同意勿登船、觸碰拼板舟或拍攝屋內與祭儀。","不可擅自下水、丟擲物品或干擾捕魚活動。"],iconSymbol:"🐟",color:"border-blue-500"},
+            {id:"thao",name:"邵族",romanizedName:"Thao",regions:["南投縣魚池鄉日月潭周邊"],summary:"以日月潭邵族文化、祖靈信仰及歲時祭儀聞名；杵音與祭歌承載族群記憶。",culturalTaboos:["祖靈祭儀並非一般表演，依主辦者公告確認可否觀禮。","不觸碰祭器或未開放的祭場空間。","尊重族人對祭歌、影像及文化知識的分享界線。"],iconSymbol:"🥁",color:"border-yellow-700"},
+            {id:"kavalan",name:"噶瑪蘭族",romanizedName:"Kavalan / Kebalan",regions:["花蓮縣新社等地","臺東縣"],summary:"平原與海岸生活形塑其文化，傳統祭儀包含海祭及歲時祭儀，展現與海洋、祖先的連結。",culturalTaboos:["海祭及祭儀日期由部落安排，先確認開放對象及地點。","祭場及海岸作業區依主辦者指示，不擅自進入。","尊重族人對儀式影像及口述知識的授權。"],iconSymbol:"🌊",color:"border-cyan-700"},
+            {id:"truku",name:"太魯閣族",romanizedName:"Truku / Taroko",regions:["花蓮縣","南投縣"],summary:"以gaya（祖訓與生活規範）、織布與山林知識為文化特色；部落祭儀呈現族人與祖靈的關係。",culturalTaboos:["祖靈祭及其他儀式依部落規範，先確認是否開放。","不觸碰祭具、織品或私人家屋展示物。","山區活動遵守部落接待者及安全指引。"],iconSymbol:"🏔️",color:"border-sky-700"},
+            {id:"sakizaya",name:"撒奇萊雅族",romanizedName:"Sakizaya",regions:["花蓮縣花蓮市、豐濱鄉等地"],summary:"以火神祭Palamal及族群復名歷程為重要文化記憶；祭儀延續集體認同與歷史傳承。",culturalTaboos:["火神祭等公開活動仍應依現場規範觀禮。","祭儀影像、人物特寫先取得同意。","以族人認可的族名與文化說法稱呼，避免把祭儀當表演。"],iconSymbol:"🔥",color:"border-orange-700"},
+            {id:"seediq",name:"賽德克族",romanizedName:"Seediq",regions:["南投縣仁愛鄉","花蓮縣萬榮鄉","花蓮縣秀林鄉"],summary:"以祖訓gaya、織布與部落歷史記憶為重要文化脈絡；各部落祭儀及復振方式各有特色。",culturalTaboos:["祖靈祭或部落活動的開放範圍以主辦者公告為準。","不要求族人重述創傷歷史或拍攝未同意的儀式。","尊重部落對文化內容、影像及導覽的自主權。"],iconSymbol:"🧵",color:"border-rose-700"},
+            {id:"hlaalua",name:"拉阿魯哇族",romanizedName:"Hla'alua",regions:["高雄市桃源區"],summary:"以聖貝祭miatungusu等祭儀展現部落組織與祖靈信仰；傳統祭儀由族人共同承續。",culturalTaboos:["聖貝祭等祭儀依部落安排，觀禮須先確認規範。","聖貝、祭器及男子集會空間不可擅自觸碰或進入。","祭儀細節以族人公開分享與主辦方說明為準。"],iconSymbol:"🐚",color:"border-violet-700"},
+            {id:"kanakanavu",name:"卡那卡那富族",romanizedName:"Kanakanavu",regions:["高雄市那瑪夏區"],summary:"以Mikongu（米貢祭）及河祭等文化傳統凝聚族人，祭儀保有部落自主與共同參與特色。",culturalTaboos:["Mikongu、河祭的日期及觀禮規範依部落公告。","勿擅入祭場、男子集會所或河祭作業區。","拍攝、錄音及分享祭儀資料前先取得主辦者同意。"],iconSymbol:"🌿",color:"border-lime-700"}
         ];
 
         const MOCK_FESTIVALS = [
-            {
-                tribe: "阿美族", name: "馬太鞍部落豐年祭 (Ilisin)", date: "每年 8 月中旬", location: "花蓮縣光復鄉",
-                status: "scheduled", isPublic: true,
-                desc: "感恩五穀豐收，迎靈、宴靈、送靈儀式。最後一天「情人之夜」常開放遊客共舞。"
-            },
-            {
-                tribe: "排灣族", name: "五年祭 (Maljeveq)", date: "每五年一次 (約 10-11 月)", location: "屏東縣來義鄉 (古樓等部落)",
-                status: "scheduled", isPublic: true,
-                desc: "恭迎大武山祖靈。最著名為「刺球」儀式，外賓請嚴守警戒線。"
-            },
-            {
-                tribe: "布農族", name: "打耳祭 (Malahtangia)", date: "每年 4-5 月", location: "南投/花蓮/台東各部落",
-                status: "ongoing", isPublic: false,
-                desc: "男性專屬的狩獵祭儀，傳承射箭技藝。多數部落僅限族人參與，謝絕遊客。"
-            },
-            {
-                tribe: "達悟族", name: "飛魚祭 (Rayon)", date: "每年 2-6 月", location: "台東縣蘭嶼鄉",
-                status: "scheduled", isPublic: true,
-                desc: "包含招魚祭、收藏祭等多階段。期間有嚴格海洋禁忌，遊客務必遵守當地規範。"
-            },
-            {
-                tribe: "西拉雅族", name: "吉貝耍夜祭", date: "農曆 9 月 4 日至 5 日", location: "台南市東山區",
-                status: "scheduled", isPublic: true,
-                desc: "祭拜阿立母，感恩庇佑。包含拜豬還願及牽曲敬神儀式。"
-            }
+            {tribe:"阿美族",name:"豐年祭 Ilisin",date:"多在夏季至初秋，各部落日期不同",location:"花蓮、臺東各部落",status:"schedule",isPublic:true,desc:"感謝作物收穫、祭祖與部落團聚的重要歲時祭儀，常見歌舞及年齡組織活動；祭儀內容、日期與開放方式由各部落公告。"},
+            {tribe:"泰雅族",name:"祖靈祭 / 收穫祭",date:"依部落歲時與當年公告",location:"北部及中部泰雅族部落",status:"schedule",isPublic:false,desc:"以gaga及祖靈信仰為文化脈絡，各部落祭儀名稱、形式與公開程度不一；應先向部落或文化導覽單位查詢。"},
+            {tribe:"排灣族",name:"小米收穫祭 / 五年祭 Maljeveq",date:"收穫祭依農事；五年祭依部落週期",location:"屏東、臺東排灣族部落",status:"schedule",isPublic:false,desc:"小米收穫祭感謝作物與祖靈；布曹爾群部分部落有五年祭。五年祭不等於每村同年舉辦，日期及參與規範須以主辦部落公告為準。"},
+            {tribe:"布農族",name:"打耳祭 Malahtangia",date:"常見於春季，實際日期依部落公告",location:"南投、花蓮、臺東、高雄布農族部落",status:"schedule",isPublic:false,desc:"重要歲時祭儀，涉及狩獵文化、祈福與部落傳承；儀式參與資格、射耳活動與觀禮區域依部落規範。"},
+            {tribe:"卑南族",name:"年祭、大獵祭與猴祭",date:"多在年末至翌年初，部落日期不同",location:"臺東市及周邊卑南族部落",status:"schedule",isPublic:false,desc:"年祭與年齡階級、會所及部落傳統相連；不同部落安排與儀程有別，猴祭等儀式須依主辦部落公布的參訪規範。"},
+            {tribe:"魯凱族",name:"小米收穫祭",date:"依小米收成與部落公告",location:"屏東、臺東、高雄魯凱族部落",status:"schedule",isPublic:true,desc:"以小米收穫為核心，連結祖靈信仰、家族與部落生活。公開活動與內部儀式並存，請先確認可觀禮時段。"},
+            {tribe:"鄒族",name:"Mayasvi 戰祭 / Homeyaya 小米祭",date:"依部落祭儀曆與當年公告",location:"嘉義阿里山及高雄桃源鄒族部落",status:"schedule",isPublic:false,desc:"Mayasvi為鄒族重要祭儀；Homeyaya與小米收穫相關。各社群舉辦時間及觀禮方式不同，依部落接待資訊為準。"},
+            {tribe:"賽夏族",name:"矮靈祭 Pas-ta'ai",date:"兩年小祭、十年大祭；秋季時段依公告",location:"新竹縣五峰鄉、苗栗縣南庄鄉",status:"schedule",isPublic:false,desc:"賽夏族重要祭儀，南、北賽夏部落共同維護繁複儀程與禁忌。日期、開放區域及影像規範須依當年公告，未授權不得錄音或攝影。"},
+            {tribe:"雅美族（達悟族）",name:"飛魚季 Rayon",date:"約在春季至初夏，各部落階段不同",location:"臺東縣蘭嶼鄉",status:"schedule",isPublic:false,desc:"依季節展開一系列與飛魚相關的生活及祭儀規範。各階段禁忌不同，遊客應遵循漁團與部落公告，不干擾捕魚或拍攝儀式。"},
+            {tribe:"邵族",name:"祖靈祭與歲時祭儀",date:"依部落公告",location:"南投縣魚池鄉日月潭周邊",status:"schedule",isPublic:false,desc:"以祖靈信仰、祭歌與部落傳承為核心。活動公開程度由邵族部落及主辦者決定，請勿把祭儀視為一般舞台表演。"},
+            {tribe:"噶瑪蘭族",name:"海祭 Laligi /歲時祭儀",date:"依部落安排，常見夏季活動",location:"花蓮縣新社等部落、臺東縣",status:"schedule",isPublic:true,desc:"海祭及歲時祭儀連結海洋生活、祖先與部落認同。各部落日期與公開內容不同，應查詢主辦部落當年資訊。"},
+            {tribe:"太魯閣族",name:"祖靈祭 Mgay Bari",date:"依部落公告，常見於秋季",location:"花蓮縣、南投縣太魯閣族部落",status:"schedule",isPublic:false,desc:"以祖靈信仰、gaya與部落傳承為重要脈絡。祭儀型態與公開程度因部落而異，先確認觀禮規範及拍攝許可。"},
+            {tribe:"撒奇萊雅族",name:"火神祭 Palamal",date:"每年祭期依部落公告",location:"花蓮縣撒奇萊雅族部落",status:"schedule",isPublic:true,desc:"紀念族群歷史、延續文化認同的重要祭儀。即使有公開活動，仍須尊重儀式區域與影像規範。"},
+            {tribe:"賽德克族",name:"祖靈祭 / 收穫祭",date:"依部落祭儀曆與當年公告",location:"南投、花蓮賽德克族部落",status:"schedule",isPublic:false,desc:"呈現祖訓gaya、祖靈信仰與部落傳承。各部落祭儀安排及公開程度不同，參訪前向主辦者確認。"},
+            {tribe:"拉阿魯哇族",name:"聖貝祭 Miatungusu",date:"依部落公告",location:"高雄市桃源區",status:"schedule",isPublic:false,desc:"重要祭儀之一，呈現族人共同籌備、部落組織與祖靈信仰。祭儀空間、時程及是否開放由主辦部落決定。"},
+            {tribe:"卡那卡那富族",name:"米貢祭 Mikongu / 河祭",date:"依部落公告",location:"高雄市那瑪夏區",status:"schedule",isPublic:false,desc:"米貢祭與河祭是重要傳統祭儀，凝聚家族與部落共同參與。實際時程及觀禮規範應以卡那卡那富族部落公告為準。"}
         ];
 
         const MOCK_WEATHER = [
@@ -513,7 +455,7 @@
             let html = '';
             MOCK_FESTIVALS.forEach(fest => {
                 const statusColor = fest.status === 'ongoing' ? 'bg-green-500' : 'bg-blue-400';
-                const statusText = fest.status === 'ongoing' ? '進行中' : '即將到來';
+                const statusText = '日期依部落公告';
                 const publicBadge = fest.isPublic 
                     ? `<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full border border-green-200">開放觀禮</span>`
                     : `<span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full border border-red-200">內部儀式謝絕外客</span>`;
@@ -657,7 +599,7 @@
                     </div>
                     <div class="mt-4">
                         <h3 class="font-bold text-lg text-primary">經典推薦：${tribe} ${days}日遊</h3>
-                        <p>請前往首頁【17族百科】查閱相關禁忌，並利用【祭典行事曆】確認活動開放狀態。</p>
+                        <p>請前往首頁【16族百科】查閱相關禁忌，並利用【祭典行事曆】確認活動開放狀態。</p>
                         <p class="text-gray-500 text-sm mt-2">（此為系統自動降級回應）</p>
                     </div>
                 `;
