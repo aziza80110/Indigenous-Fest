@@ -236,7 +236,7 @@
             
             <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg mb-6 flex items-start">
                 <i class="fas fa-info-circle mt-1 mr-3 text-blue-500"></i>
-                <p class="text-sm">山區氣候瞬息萬變，建議出發前再次確認天氣。以下數據為模擬氣象署 (CWA) 資訊看板。</p>
+                <p class="text-sm">目前看板內容為示意資料，不能作為祭期預報。出發前請查詢中央氣象署當地預報；約15天後的天氣仍有不確定性，請在出發前再確認。</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="weather-container">
@@ -335,7 +335,7 @@
         // ----------------------------------------------------------------------
         // 官方認定16族；祭儀時序僅列常見季節，確切日期及開放範圍以主辦部落當年公告為準。
         const MOCK_TRIBES = [
-            {id:"amis",name:"阿美族",romanizedName:"Amis / Pangcah",regions:["花蓮縣","臺東縣"],summary:"部落分布於東部海岸、縱谷與平原；以年齡組織、歌舞及豐年祭維繫部落互助與文化傳承。",culturalTaboos:["祭典各階段規範由部落訂定，先確認是否開放觀禮。","拍攝族人、祭儀及家屋前先徵得同意。","依主辦方動線與指引行動，不擅闖管制區。"],iconSymbol:"☀️",color:"border-red-500"},
+            {id:"amis",name:"阿美族",romanizedName:"Amis / Pangcah",regions:["花蓮縣","臺東縣"],summary:"部落分布於東部海岸、縱谷與平原；以年齡組織、歌舞及豐年祭維繫部落互助與文化傳承。",culturalTaboos:["祭典各階段規範由部落訂定，先確認是否請確認開放方式。","拍攝族人、祭儀及家屋前先徵得同意。","依主辦方動線與指引行動，不擅闖管制區。"],iconSymbol:"☀️",color:"border-red-500"},
             {id:"tayal",name:"泰雅族",romanizedName:"Tayal / Atayal",regions:["新北市","桃園市","新竹縣","苗栗縣","臺中市","宜蘭縣"],summary:"以gaga（祖訓與規範）、織布與傳統紋面文化著稱；部落分布跨越北部及中部山區。",culturalTaboos:["祖靈祭及家族儀式多有內部規範，未獲邀請不要求參與。","進入部落及山林前先洽詢在地接待者。","不觸碰祭具、獵具或私人家屋物品。"],iconSymbol:"🧶",color:"border-red-700"},
             {id:"paiwan",name:"排灣族",romanizedName:"Paiwan",regions:["屏東縣","臺東縣"],summary:"家名、家族與階序關係形塑社會生活；石板屋、琉璃珠、陶壺與百步蛇意象展現豐富藝術傳統。",culturalTaboos:["依部落規範參與小米收穫祭或五年祭，神聖儀式可能不開放。","石板屋、祖靈柱及工藝品未經同意不可觸摸。","拍攝或分享祭儀影像前，先詢問主辦者。"],iconSymbol:"🐍",color:"border-gray-800"},
             {id:"bunun",name:"布農族",romanizedName:"Bunun",regions:["南投縣","花蓮縣","臺東縣","高雄市"],summary:"分布於中央山脈兩側；以八部合音、狩獵知識及配合農事歲時的祭儀聞名。",culturalTaboos:["打耳祭等儀式可能設有參與限制，依部落當年公告。","射箭場、祭場及祭具非開放區域請勿進入或觸碰。","尊重部落的狩獵、山林與拍攝規範。"],iconSymbol:"🏹",color:"border-green-700"},
@@ -458,7 +458,7 @@
                 const statusText = '日期依部落公告';
                 const publicBadge = fest.isPublic 
                     ? `<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full border border-green-200">開放觀禮</span>`
-                    : `<span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full border border-red-200">內部儀式謝絕外客</span>`;
+                    : `<span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full border border-red-200">請確認開放方式</span>`;
 
                 html += `
                     <div class="relative pl-6 mb-8 last:mb-0">
