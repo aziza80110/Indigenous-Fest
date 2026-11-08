@@ -1,106 +1,154 @@
 {
   "referenceYear": 115,
   "calendarYear": 2026,
-  "sourceTitle": "原住民族委員會 115 年度原住民族歲時祭儀放假日期",
-  "sourceUrl": "https://www.cip.gov.tw/data/news/202511/T-89411517.pdf",
-  "checkedAt": "2026-11-08",
-  "note": "此表所列為原民會公告之歲時祭儀放假日期參考區間，不等於部落對外活動的確切日期。實際日期、地點與開放方式仍須查當年度主辦部落、地方政府或公所公告。區間僅供提早規劃參考，不會觸發旅遊行程郵件。",
+  "sourceTitle": "原住民族委員會公告原住民族歲時祭儀放假日期（115年度）",
+  "sourceUrl": "https://www.cip.gov.tw/zh-tw/news/data-list/0991B05985DBFF77/C782A9E0C4FE437EDAFFA5ED88C834AE-info.html",
+  "checkedAt": "2026-11-09",
+  "note": "此表列的是原民會公告的115年度（2026年）歲時祭儀放假日期參考區間，不等於部落對外活動的確切日期，也不代表區間內每天都有活動。2026年7月公告頁附有更新資料；實際日期、地點與開放方式仍須查當年度主辦部落、地方政府或公所公告。此參考區間不會觸發旅遊行程郵件。",
   "festivals": [
     {
       "tribe": "阿美族",
       "name": "豐年祭（收穫祭）",
-      "period": "7月1日至10月6日",
-      "note": "各部落舉辦日期不同。"
+      "period": "豐年祭：7月1日至10月6日",
+      "note": "各部落實際日期不同，依主辦部落公告。",
+      "storyType": "祭儀脈絡",
+      "story": "豐年祭原與小米收穫相連，後來隨稻米耕作普及，逐漸改在稻米收成後舉行。它同時包含謝神、聯誼、年齡階級活動與部落教育，並非只有慶祝豐收。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/DBADF0287998968BD0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "泰雅族",
       "name": "感恩祭（祖靈祭）",
       "period": "7月1日至8月31日",
-      "note": "各部落日期與開放方式不同。"
+      "note": "各部落日期與開放方式不同。",
+      "storyType": "祭儀脈絡",
+      "story": "祭儀跟著播種、除草與收穫等農事節奏進行。祖靈祭中，族人準備小米糕、酒與醃肉，請祖先享用並祈求耕作、狩獵平安；各部落對祭名、信仰詮釋和日期都有差異。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/8C87B4AF56B788EED0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "排灣族",
       "name": "小米收穫祭／五年祭",
-      "period": "收穫祭：7月1日至9月30日；五年祭：9月1日至10月31日",
-      "note": "五年祭依部落週期舉行，兩者皆須查主辦部落公告。"
+      "period": "收穫祭：7月1日至10月31日；五年祭：9月1日至10月31日",
+      "note": "五年祭依部落週期舉行，不代表每個部落同年舉辦。",
+      "storyType": "口述傳說與祭儀",
+      "story": "布曹爾群的五年祭傳說提到，大武山上的祖靈每五年到部落探望子孫，因此部落舉行祭儀迎接與送別祖靈。小米收穫祭則以入倉、祈福和選留來年種子為重要環節。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/67E3CC5AE2F10A8BD0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "布農族",
       "name": "射耳祭",
       "period": "3月1日至5月31日",
-      "note": "各部落日期與祭儀安排不同。"
+      "note": "各部落日期與祭儀安排不同。",
+      "storyType": "祭儀脈絡",
+      "story": "射耳祭祈求狩獵與農作豐收，也承擔教育、競技、團結與規範傳承的功能。傳統流程包含狩獵與釀酒準備、射耳、火祭及祭槍等；各社群實際儀程不同。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/F39C8394699DD2D6D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "卑南族",
       "name": "年祭 ’amiyan",
-      "period": "2026年12月15日至2027年1月5日",
-      "note": "跨年日期依115年度公告。"
+      "period": "年祭：2026年12月15日至2027年1月5日",
+      "note": "跨年祭期依115年度公告。",
+      "storyType": "祭儀脈絡",
+      "story": "卑南族年中祭儀兼有農事與生命禮俗。年祭中的猴祭與大獵祭和男子年齡階級、會所訓練及部落傳承相連；不同部落的儀程與開放規範需分別查證。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/913F9B9D35D49AC3D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "魯凱族",
       "name": "小米歲時祭儀",
       "period": "7月1日至8月31日",
-      "note": "不同部落另有祈雨祭、黑米祭、勇士祭等祭儀。"
+      "note": "不同部落另有祈雨祭、黑米祭、勇士祭等祭儀。",
+      "storyType": "口述傳說與祭儀",
+      "story": "多納部落黑米祭的傳說說，神靈從深潭取來稻米與小米種子交給耕作婦女；祭典以感謝種子與豐收為核心。魯凱各社群的祭典名稱、季節和形式並不相同。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/409F703B4E592A82D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "鄒族",
       "name": "Homeyaya 小米收穫祭",
       "period": "7月1日至8月31日",
-      "note": "Mayasvi 戰祭另列於115年度公告；實際場次依各社公告。"
+      "note": "Mayasvi 戰祭另列於115年度公告；實際場次依各社公告。",
+      "storyType": "祭儀傳說與脈絡",
+      "story": "鄒族傳說中，哈莫大神創造鄒族並與瑪雅人有共同起源。Mayasvi戰祭則在會所與赤榕樹周邊迎神、祭神，傳達追念歷史、祈願平安與凝聚部落的意義。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/AE6EE12F5F284D59D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "賽夏族",
       "name": "巴斯達隘（矮靈祭）",
       "period": "11月1日至12月15日",
-      "note": "祭典週期與場次以南、北賽夏主辦單位公告為準。"
+      "note": "祭典週期與場次以南、北賽夏主辦單位公告為準。",
+      "storyType": "口述傳說",
+      "story": "原民會資料所記載的傳說版本中，賽夏族曾向達隘族（矮人）學習農耕、醫藥與歌舞，後因衝突造成傷亡；巴斯達隘以迎靈、會靈、娛靈與送靈等儀式追念並安撫矮靈。此為傳承故事之一，細節應尊重部落說法。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/8DF9561F4FCC6AF4D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "雅美族（達悟族）",
       "name": "飛魚祭／收穫祭",
       "period": "飛魚祭：2月1日至6月30日；收穫祭：5月1日至6月30日",
-      "note": "各部落漁團與祭儀階段不同，請遵循當地規範。"
+      "note": "各部落漁團與祭儀階段不同，請遵循當地規範。",
+      "storyType": "口述傳說與海洋知識",
+      "story": "黑翅膀飛魚傳說記述祖先曾把飛魚和其他食物混煮而生病，後由黑翅飛魚教導食用方法與漁季規範。招魚、收藏與終食祭標記飛魚季不同階段，也提醒族人尊重海洋資源。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/5839F78F6C869EE4D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "邵族",
       "name": "祖靈祭 Tungkariri Lus’an",
-      "period": "農曆8月1日至8月31日",
-      "note": "農曆日期換算為國曆會逐年不同。"
+      "period": "祖靈祭：農曆8月1日至8月30日",
+      "note": "農曆日期換算為國曆會逐年不同。",
+      "storyType": "起源傳說與祭儀",
+      "story": "邵族遷居傳說中，祖先追逐白鹿到日月潭，見此地魚產與土地適合生活而定居。祖靈祭以祖靈籃及女祭司為核心；依是否有主祭者，可能是數日的小過年或較長的大過年。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/3343FD21497CA007D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "噶瑪蘭族",
       "name": "豐年祭 qataban／gataban",
-      "period": "7月10日至8月31日",
-      "note": "各部落海祭時段另有差異。"
+      "period": "豐年祭：7月10日至8月31日",
+      "note": "海祭依部落不同，原民會公告列有3–4月、7–8月等參考區間。",
+      "storyType": "祭儀脈絡與遷徙記憶",
+      "story": "海祭Laligi在海邊祭告祖靈與掌管海洋的神靈，並可能以獻祭、祈願和共享漁獲連結族人與海洋。新社、立德、樟原及大峰峰等部落的祭名與時間不同；不宜用單一部落代表全族。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/7088C08FB51F3383D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "太魯閣族",
       "name": "感恩祭 Mgay Bari",
       "period": "9月1日至10月31日",
-      "note": "以當年度主辦部落公告為準。"
+      "note": "以當年度主辦部落公告為準。",
+      "storyType": "祭儀脈絡",
+      "story": "Mgay Bari在小米收割後由傳統領袖或長老商議時間。族人以酒、小米糕、農作物、水果和魚祭請祖靈共享，供品共同食用；離開祭場時跨火堆象徵與祖靈分別。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/F0736660B8023670D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "撒奇萊雅族",
       "name": "火神祭 Palamal",
       "period": "10月1日至10月15日",
-      "note": "豐年祭及其他祭儀另有各自時段。"
+      "note": "豐年祭及其他祭儀另有各自時段。",
+      "storyType": "歷史記憶",
+      "story": "Palamal火神祭紀念1878年達固部灣事件中遭火攻而犧牲的祖先與傳統領袖。祭典以迎神、祈福、繞境、祭神及送神等儀程，延續歷史記憶並凝聚族群認同。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/588FAD20D4E16D65D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "賽德克族",
       "name": "年祭／收穫節",
       "period": "年祭：2026年11月1日至2027年3月31日；收穫節：2026年12月20日至2027年1月5日",
-      "note": "公告期間較長，並非活動每日舉行。"
+      "note": "公告區間較長，不代表每日都有活動。",
+      "storyType": "祭儀脈絡",
+      "story": "祖靈祭在小米收割後由傳統領袖或長老決定時間。族人以酒、小米糕、農作物、水果與魚為供品，請祖靈享用；祭後跨過火堆、離場不回頭，象徵人與祖靈分開。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/F35F3EBC7CE2E1BCD0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "拉阿魯哇族",
       "name": "聖貝祭 Miatungusu",
       "period": "2月20日至3月31日",
-      "note": "實際祭儀日與開放方式依主辦部落公告。"
+      "note": "實際祭儀日與開放方式依主辦部落公告。",
+      "storyType": "口述傳說",
+      "story": "聖貝祭傳說中，拉阿魯哇祖先離開Hlasʉnga時，kavurua（小矮人）將珍貴的takiarʉ聖貝贈給族人，並請他們奉為神物祭拜。聖貝薦酒是祭典重要儀式，顏色變化承載族人對太祖的觀察與敬意。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/DE7E75BDD1F53F90D0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     },
     {
       "tribe": "卡那卡那富族",
       "name": "米貢祭 Mikongu",
       "period": "10月1日至10月31日",
-      "note": "河祭另列3月1日至3月31日；請依部落公告。"
+      "note": "河祭另列3月1日至3月31日；請依部落公告。",
+      "storyType": "祭儀脈絡",
+      "story": "官方資料記錄，米貢祭與河祭在曾受外在政策及信仰變遷影響而中斷後，近代重新恢復，成為重要年度祭儀。米貢祭連結小米種植與收成，河祭則依家族和部落傳統進行；目前公開資料未記載單一共同起源故事。",
+      "storySourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/91A2A514F76BAEACD0636733C6861689/info.html?cumid=8F19BF08AE220D65"
     }
   ]
 }
