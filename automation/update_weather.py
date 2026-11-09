@@ -114,8 +114,8 @@ def main() -> int:
             })
 
     covered = len({row["tribe"] for row in forecasts})
-    if covered < 16:
-        raise SystemExit(f"匹配到 {covered}/16 族代表鄉鎮，未發布不完整資料。缺少：{', '.join(missing)}")
+    if covered < 17:
+        raise SystemExit(f"匹配到 {covered}/17 族代表鄉鎮，未發布不完整資料。缺少：{', '.join(missing)}")
 
     output = {
         "source": "中央氣象署鄉鎮未來一週預報",
@@ -126,7 +126,7 @@ def main() -> int:
         "notice": "每族列出代表鄉鎮，不代表整個族群分布區域；祭典預報請以實際舉辦鄉鎮為準。資料通常涵蓋未來一週，較遠日期不可視為精確預報。",
     }
     args.output.write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"已更新 {len(forecasts)} 筆鄉鎮預報，涵蓋 {covered}/16 族。")
+    print(f"已更新 {len(forecasts)} 筆鄉鎮預報，涵蓋 {covered}/17 族。")
     return 0
 
 
