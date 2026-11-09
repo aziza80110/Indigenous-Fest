@@ -37,6 +37,19 @@ jobs:
       - run: python -m pip install -r automation/requirements.txt
       - name: 預覽今日符合條件的活動（不寄信）
         run: python automation/send_travel_emails.py preview
+      - name: 檢查收件設定（只顯示遮蔽地址）
+        env:
+          TRIP_EMAIL_TO: ${{ secrets.TRIP_EMAIL_TO }}
+        run: |
+          python - <<'PY'
+          import os
+          address = os.environ.get("TRIP_EMAIL_TO", "").strip()
+          if not address or "@" not in address:
+              print("TRIP_EMAIL_TO：未設定或格式不正確")
+          else:
+              local, domain = address.rsplit("@", 1)
+              print(f"TRIP_EMAIL_TO：已設定（{local[:1]}***@{domain}）")
+          PY
 
   cwa-api-test:
     if: github.event_name == 'workflow_dispatch'
@@ -72,7 +85,7 @@ jobs:
           PY
 
   scheduled-send:
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'schedule' && vars.ENABLE_FESTIVAL_EMAILS == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
