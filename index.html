@@ -292,7 +292,7 @@
                     <i class="fas fa-search mr-2"></i>查詢官方交通資料
                 </button>
                 <p class="text-xs text-gray-500 mt-3">查詢結果附 TDX 來源連結。班表與票價以官方最新回傳資料為準；出發前仍請至營運單位確認異動。</p>
-                <div id="transit-result" class="hidden bg-stone-50 border rounded-xl p-4 mt-5 text-sm text-gray-800 overflow-auto max-h-[40rem]" aria-live="polite"></div>
+                <div id="transit-result" class="hidden bg-stone-50 border rounded-xl p-4 mt-5 text-sm text-gray-800" aria-live="polite"></div>
             </section>
 
             <!-- 收藏清單區塊 -->
@@ -821,13 +821,31 @@
             if (!value || typeof value !== 'object') return '';
             return value.Zh_tw || value.zh_tw || value.En || value.Ja || '';
         };
+        let transitTableSequence = 0;
+        transitResult.addEventListener('click', event => {
+            const button = event.target.closest('[data-transit-scroll]');
+            if (!button) return;
+            document.getElementById(button.dataset.transitScroll)?.scrollBy({
+                left: Number(button.dataset.direction) * 320,
+                behavior: 'smooth'
+            });
+        });
         const transitTable = (headers, rows) => {
             if (!rows.length) return '<p class="rounded-lg bg-white p-4 text-gray-500">官方資料目前沒有可顯示的項目。</p>';
-            return '<div class="overflow-x-auto rounded-lg border border-gray-200 bg-white"><table class="w-max min-w-full divide-y divide-gray-200 text-left"><thead class="bg-gray-100"><tr>' +
+            const tableId = 'transit-table-' + (++transitTableSequence);
+            return '<div class="rounded-lg border border-gray-200 bg-white">' +
+                '<div class="flex items-center justify-between gap-3 border-b bg-stone-50 px-3 py-2">' +
+                '<span class="text-xs text-gray-600">欄位較多時，使用按鈕左右查看</span>' +
+                '<div class="flex shrink-0 gap-2">' +
+                '<button type="button" data-transit-scroll="' + tableId + '" data-direction="-1" aria-label="表格向左移動" class="rounded border bg-white px-3 py-1 font-semibold text-gray-700">← 左移</button>' +
+                '<button type="button" data-transit-scroll="' + tableId + '" data-direction="1" aria-label="表格向右移動" class="rounded border bg-white px-3 py-1 font-semibold text-gray-700">右移 →</button>' +
+                '</div></div>' +
+                '<div id="' + tableId + '" class="max-w-full overflow-x-scroll overflow-y-hidden touch-pan-x" style="-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain">' +
+                '<table class="w-max min-w-full divide-y divide-gray-200 text-left"><thead class="bg-gray-100"><tr>' +
                 headers.map(header => '<th scope="col" class="' + (header === '備註' ? 'min-w-[18rem] max-w-[28rem] whitespace-normal' : 'whitespace-nowrap') + ' px-3 py-2 font-semibold">' + escapeTransitHtml(header) + '</th>').join('') +
                 '</tr></thead><tbody class="divide-y divide-gray-100">' +
                 rows.map(row => '<tr class="odd:bg-white even:bg-stone-50">' + row.map((value, index) => '<td class="' + (headers[index] === '備註' ? 'min-w-[18rem] max-w-[28rem] whitespace-normal break-words' : 'whitespace-nowrap') + ' px-3 py-2 align-top">' + escapeTransitHtml(value || '—') + '</td>').join('') + '</tr>').join('') +
-                '</tbody></table></div>';
+                '</tbody></table></div></div>';
         };
         const transitSourceLink = (url, label) =>
             '<a class="text-primary underline underline-offset-2" href="' + escapeTransitHtml(url) + '" target="_blank" rel="noopener noreferrer">' +
