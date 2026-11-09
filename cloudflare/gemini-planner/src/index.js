@@ -23,12 +23,190 @@ function json(data, status, origin) {
   return new Response(JSON.stringify(data), { status, headers });
 }
 
+
+const TDX_TOKEN_URL = "https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token";
+const TDX_API_BASE = "https://tdx.transportdata.tw/api/basic";
+let cachedTdxToken = "";
+let cachedTdxTokenUntil = 0;
+
+const TDX_CITIES = {
+  "基隆市":"Keelung", "臺北市":"Taipei", "新北市":"NewTaipei", "桃園市":"Taoyuan",
+  "新竹市":"Hsinchu", "新竹縣":"HsinchuCounty", "苗栗縣":"MiaoliCounty", "臺中市":"Taichung",
+  "彰化縣":"ChanghuaCounty", "南投縣":"NantouCounty", "雲林縣":"YunlinCounty", "嘉義市":"Chiayi",
+  "嘉義縣":"ChiayiCounty", "臺南市":"Tainan", "高雄市":"Kaohsiung", "屏東縣":"PingtungCounty",
+  "宜蘭縣":"YilanCounty", "花蓮縣":"HualienCounty", "臺東縣":"TaitungCounty",
+  "澎湖縣":"PenghuCounty", "金門縣":"KinmenCounty", "連江縣":"LienchiangCounty"
+};
+
+function asArray(data) {
+  if (Array.isArray(data)) return data;
+  if (!data || typeof data !== "object") return [];
+  for (const key of ["Stations", "TrainTimetables", "ODFares", "Routes", "StopOfRoutes", "Schedules", "data"]) {
+    if (Array.isArray(data[key])) return data[key];
+  }
+  return [];
+}
+function zh(value) {
+  if (typeof value === "string") return value;
+  return value?.Zh_tw || value?.zh_tw || value?.En || "";
+}
+function stationLabel(item) {
+  return zh(item?.StationName) || item?.StationName || "";
+}
+async function getTdxToken(env) {
+  if (cachedTdxToken && Date.now() < cachedTdxTokenUntil) return cachedTdxToken;
+  if (!env.TDX_CLIENT_ID || !env.TDX_CLIENT_SECRET) throw new Error("TDX_SECRETS_MISSING");
+  const form = new URLSearchParams({
+    grant_type: "client_credentials",
+    client_id: env.TDX_CLIENT_ID,
+    client_secret: env.TDX_CLIENT_SECRET
+  });
+  const response = await fetch(TDX_TOKEN_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: form,
+    signal: AbortSignal.timeout(12000)
+  });
+  if (!response.ok) throw new Error("TDX_TOKEN_" + response.status);
+  const token = await response.json();
+  if (!token.access_token) throw new Error("TDX_TOKEN_INVALID");
+  cachedTdxToken = token.access_token;
+  cachedTdxTokenUntil = Date.now() + Math.max(60, Number(token.expires_in || 3600) - 120) * 1000;
+  return cachedTdxToken;
+}
+async function tdxGet(path, env) {
+  const token = await getTdxToken(env);
+  const response = await fetch(TDX_API_BASE + path, {
+    headers: { Authorization: "Bearer " + token, Accept: "application/json" },
+    signal: AbortSignal.timeout(15000)
+  });
+  if (!response.ok) throw new Error("TDX_API_" + response.status);
+  return await response.json();
+}
+function tdxError(error, origin) {
+  const code = String(error?.message || "");
+  if (code === "TDX_SECRETS_MISSING") return json({ error: "Cloudflare 尚未設定 TDX_CLIENT_ID／TDX_CLIENT_SECRET。" }, 503, origin);
+  if (code.startsWith("TDX_TOKEN_401") || code.startsWith("TDX_TOKEN_400") || code.startsWith("TDX_TOKEN_403")) {
+    return json({ error: "TDX 授權失敗，請確認 Cloudflare 的 Client ID／Client Secret 是否正確。" }, 502, origin);
+  }
+  if (code.startsWith("TDX_API_401") || code.startsWith("TDX_API_403")) {
+    return json({ error: "TDX 已拒絕此資料服務，請確認會員方案是否已授權臺鐵／公車基礎 API。" }, 502, origin);
+  }
+  if (code.startsWith("TDX_API_429")) return json({ error: "TDX 查詢頻率已達限制，請稍後再試。" }, 429, origin);
+  return json({ error: "TDX 交通資料暫時無法取得，請稍後再試。" }, 502, origin);
+}
+async function handleTransit(body, env, origin) {
+  try {
+    if (!env.TDX_CLIENT_ID || !env.TDX_CLIENT_SECRET) throw new Error("TDX_SECRETS_MISSING");
+    const mode = typeof body.mode === "string" ? body.mode : "";
+    const format = "$format=JSON";
+    if (mode === "rail") {
+      const from = typeof body.fromStation === "string" ? body.fromStation.trim() : "";
+      const to = typeof body.toStation === "string" ? body.toStation.trim() : "";
+      const date = typeof body.date === "string" ? body.date : "";
+      if (!from || !to || from.length > 40 || to.length > 40 ||
+          !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+          Number.isNaN(Date.parse(date + "T00:00:00Z")) || from === to) {
+        return json({ error: "請填寫不同的臺鐵起訖站，並選擇有效日期。" }, 400, origin);
+      }
+      const stationQuery = new URLSearchParams({ "$select":"StationID,StationName", "$top":"1000", "$format":"JSON" });
+      const stations = asArray(await tdxGet("/v3/Rail/TRA/Station?" + stationQuery.toString(), env));
+      const matchStation = name => stations.find(item => stationLabel(item).trim() === name);
+      const originStation = matchStation(from);
+      const destinationStation = matchStation(to);
+      if (!originStation || !destinationStation) {
+        return json({
+          error: "找不到完全相符的臺鐵站名，請使用官方車站名稱（例如：臺北、花蓮）。",
+          source: "https://tdx.transportdata.tw/api-service/swagger/basic"
+        }, 404, origin);
+      }
+      const fromId = encodeURIComponent(originStation.StationID);
+      const toId = encodeURIComponent(destinationStation.StationID);
+      const [timetableData, fareData] = await Promise.all([
+        tdxGet("/v3/Rail/TRA/DailyTrainTimetable/OD/" + fromId + "/to/" + toId + "/" + date + "?" + format, env),
+        tdxGet("/v3/Rail/TRA/ODFare/" + fromId + "/to/" + toId + "?" + format, env)
+      ]);
+      const timetable = asArray(timetableData);
+      const fares = asArray(fareData);
+      return json({
+        mode: "rail",
+        queriedAt: new Date().toISOString(),
+        date,
+        from: { id: originStation.StationID, name: stationLabel(originStation) },
+        to: { id: destinationStation.StationID, name: stationLabel(destinationStation) },
+        timetable: timetable.slice(0, 40),
+        fares: fares.slice(0, 30),
+        timetableSource: "https://tdx.transportdata.tw/api-service/swagger/basic",
+        fareSource: "https://tdx.transportdata.tw/api-service/swagger/basic",
+        note: timetable.length ? "" : "TDX 目前沒有回傳這個日期的站間班次，請確認日期在可查詢範圍內。"
+      }, 200, origin);
+    }
+    if (mode === "bus") {
+      const cityName = typeof body.city === "string" ? body.city : "";
+      const city = TDX_CITIES[cityName];
+      const routeName = typeof body.routeName === "string" ? body.routeName.trim() : "";
+      if (!city || !routeName || routeName.length > 40) {
+        return json({ error: "請選擇縣市並輸入公車路線名稱或路線號碼。" }, 400, origin);
+      }
+      const routeParams = new URLSearchParams({ "$top":"1000", "$format":"JSON" });
+      const routeData = await tdxGet("/v3/Bus/Route/City/" + city + "?" + routeParams.toString(), env);
+      const routes = asArray(routeData);
+      const getRouteName = item => zh(item?.RouteName) || item?.RouteName || "";
+      const exact = routes.filter(item => getRouteName(item).trim().toLowerCase() === routeName.toLowerCase());
+      const matches = exact.length ? exact : routes.filter(item => getRouteName(item).toLowerCase().includes(routeName.toLowerCase()));
+      const distinct = [...new Map(matches.map(item => [item.RouteUID, item])).values()].slice(0, 12);
+      if (!exact.length || !distinct.length) {
+        return json({
+          mode: "bus",
+          matches: distinct.map(item => ({
+            routeUID: item.RouteUID,
+            routeName: getRouteName(item),
+            departure: zh(item.DepartureStopName) || "",
+            destination: zh(item.DestinationStopName) || ""
+          })),
+          error: distinct.length ? "找到相近路線，請將下列完整路線名稱填入後再查詢。" : "TDX 找不到此縣市的相符公車路線。",
+          routeSource: "https://tdx.transportdata.tw/api-service/swagger/basic/939d7b26-14d6-40bc-bdc9-a076e3f8d4dc"
+        }, 200, origin);
+      }
+      const selected = distinct[0];
+      const routeUid = String(selected.RouteUID || "");
+      if (!routeUid || !/^[A-Za-z0-9_-]{1,100}$/.test(routeUid)) throw new Error("TDX_ROUTE_INVALID");
+      const filter = "$filter=" + encodeURIComponent("RouteUID eq '" + routeUid.replace(/'/g, "''") + "'");
+      const query = filter + "&$top=100&$format=JSON";
+      const [stopData, scheduleData] = await Promise.all([
+        tdxGet("/v3/Bus/StopOfRoute/City/" + city + "?" + query, env),
+        tdxGet("/v3/Bus/Schedule/City/" + city + "?" + query, env)
+      ]);
+      return json({
+        mode: "bus",
+        queriedAt: new Date().toISOString(),
+        city: cityName,
+        route: {
+          uid: selected.RouteUID,
+          name: getRouteName(selected),
+          departure: zh(selected.DepartureStopName) || "",
+          destination: zh(selected.DestinationStopName) || ""
+        },
+        stops: asArray(stopData).slice(0, 10),
+        schedules: asArray(scheduleData).slice(0, 10),
+        routeSource: "https://tdx.transportdata.tw/api-service/swagger/basic/939d7b26-14d6-40bc-bdc9-a076e3f8d4dc",
+        stopsSource: "https://tdx.transportdata.tw/api-service/swagger/basic/939d7b26-14d6-40bc-bdc9-a076e3f8d4dc",
+        scheduleSource: "https://tdx.transportdata.tw/api-service/swagger/basic/939d7b26-14d6-40bc-bdc9-a076e3f8d4dc"
+      }, 200, origin);
+    }
+    return json({ error: "不支援的交通查詢類型。" }, 400, origin);
+  } catch (error) {
+    console.error("TDX transit query failed", String(error?.message || "unknown"));
+    return tdxError(error, origin);
+  }
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin") || "";
     const url = new URL(request.url);
     if (origin !== ALLOWED_ORIGIN) return json({ error: "此服務僅接受 Indigenous-Fest 網站的請求。" }, 403, "");
-    if (url.pathname !== "/api/plan") return json({ error: "找不到此服務路徑。" }, 404, origin);
+    if (url.pathname !== "/api/plan" && url.pathname !== "/api/transit") return json({ error: "找不到此服務路徑。" }, 404, origin);
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: {
         "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
@@ -39,10 +217,10 @@ export default {
       }});
     }
     if (request.method !== "POST") return json({ error: "只接受 POST 請求。" }, 405, origin);
-    if (!env.GEMINI_API_KEY) return json({ error: "後端尚未設定 Gemini 金鑰，請稍後再試。" }, 503, origin);
+    
 
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-    const rate = await env.PLAN_RATE_LIMITER.limit({ key: ip });
+    const rate = env.PLAN_RATE_LIMITER ? await env.PLAN_RATE_LIMITER.limit({ key: ip }) : { success: true };
     if (!rate.success) return json({ error: "短時間內規劃次數較多，請稍等一分鐘再試。" }, 429, origin);
 
     const declaredLength = Number(request.headers.get("Content-Length") || 0);
@@ -57,6 +235,9 @@ export default {
     } catch {
       return json({ error: "無法讀取行程條件，請重新送出。" }, 400, origin);
     }
+
+    if (url.pathname === "/api/transit") return await handleTransit(body, env, origin);
+    if (!env.GEMINI_API_KEY) return json({ error: "後端尚未設定 Gemini 金鑰，請稍後再試。" }, 503, origin);
 
     const originCity = typeof body.origin === "string" ? body.origin.trim() : "";
     const days = Number(body.days);
