@@ -1,4 +1,4 @@
-name: 更新16族鄉鎮天氣資料
+name: 更新17族鄉鎮天氣資料
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -r automation/requirements.txt
-      - name: 擷取中央氣象署368鄉鎮預報並整理16族代表地區
+      - name: 擷取中央氣象署368鄉鎮預報並整理17族代表地區
         env:
           CWA_AUTHORIZATION: ${{ secrets.CWA_AUTHORIZATION }}
         run: python automation/update_weather.py
