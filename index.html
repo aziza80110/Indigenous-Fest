@@ -244,6 +244,57 @@
                 </div>
             </div>
             
+
+            <section id="transit-lookup" class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 mt-8">
+                <div class="flex items-center gap-3 mb-2">
+                    <i class="fas fa-train text-forest text-xl"></i>
+                    <h3 class="text-xl font-bold text-gray-800">即時交通資料查詢（TDX）</h3>
+                </div>
+                <p class="text-sm text-gray-600 mb-5">查詢官方臺鐵站間班次與票價，或指定縣市的公車路線、停靠站序與定期班表。這是官方交通資料查詢；完整「住址到祭典會場」轉乘路徑需先知道實際會場與接駁資訊。</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="transit-mode" class="block text-sm font-medium text-gray-700 mb-1">交通工具</label>
+                        <select id="transit-mode" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="rail">臺鐵：查站間時刻與票價</option>
+                            <option value="bus">公車：查路線、站序與班表</option>
+                        </select>
+                    </div>
+                    <div id="transit-city-wrap" class="hidden">
+                        <label for="transit-city" class="block text-sm font-medium text-gray-700 mb-1">公車縣市</label>
+                        <select id="transit-city" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">選擇縣市</option>
+                            <option>基隆市</option><option>臺北市</option><option>新北市</option><option>桃園市</option>
+                            <option>新竹市</option><option>新竹縣</option><option>苗栗縣</option><option>臺中市</option>
+                            <option>彰化縣</option><option>南投縣</option><option>雲林縣</option><option>嘉義市</option>
+                            <option>嘉義縣</option><option>臺南市</option><option>高雄市</option><option>屏東縣</option>
+                            <option>宜蘭縣</option><option>花蓮縣</option><option>臺東縣</option><option>澎湖縣</option>
+                            <option>金門縣</option><option>連江縣</option>
+                        </select>
+                    </div>
+                    <div id="transit-rail-from-wrap">
+                        <label for="transit-from" class="block text-sm font-medium text-gray-700 mb-1">臺鐵上車站</label>
+                        <input id="transit-from" maxlength="40" placeholder="例如：臺北" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div id="transit-rail-to-wrap">
+                        <label for="transit-to" class="block text-sm font-medium text-gray-700 mb-1">臺鐵下車站</label>
+                        <input id="transit-to" maxlength="40" placeholder="例如：花蓮" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div id="transit-date-wrap">
+                        <label for="transit-date" class="block text-sm font-medium text-gray-700 mb-1">搭乘日期</label>
+                        <input id="transit-date" type="date" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div id="transit-bus-route-wrap" class="hidden">
+                        <label for="transit-bus-route" class="block text-sm font-medium text-gray-700 mb-1">公車路線名稱／號碼</label>
+                        <input id="transit-bus-route" maxlength="40" placeholder="例如：307、藍線" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                </div>
+                <button id="btn-transit-query" class="mt-5 bg-forest hover:bg-green-800 text-white font-bold py-3 px-5 rounded-lg">
+                    <i class="fas fa-search mr-2"></i>查詢官方交通資料
+                </button>
+                <p class="text-xs text-gray-500 mt-3">查詢結果附 TDX 來源連結。班表與票價以官方最新回傳資料為準；出發前仍請至營運單位確認異動。</p>
+                <pre id="transit-result" class="hidden whitespace-pre-wrap break-words bg-stone-50 border rounded-xl p-4 mt-5 text-sm text-gray-800 overflow-auto max-h-[32rem]" aria-live="polite"></pre>
+            </section>
+
             <!-- 收藏清單區塊 -->
             <div class="mt-12" id="saved-itineraries-section">
                 <h3 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-bookmark mr-2 text-gold"></i>我的雲端收藏行程</h3>
@@ -737,6 +788,104 @@
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-magic mr-2"></i> 重新規劃';
+            }
+        });
+
+
+        // ----------------------------------------------------------------------
+        // 4A. TDX 官方交通資料查詢（授權金鑰僅由 Cloudflare Worker 使用）
+        // ----------------------------------------------------------------------
+        const transitMode = document.getElementById('transit-mode');
+        const transitCityWrap = document.getElementById('transit-city-wrap');
+        const transitFromWrap = document.getElementById('transit-rail-from-wrap');
+        const transitToWrap = document.getElementById('transit-rail-to-wrap');
+        const transitDateWrap = document.getElementById('transit-date-wrap');
+        const transitBusWrap = document.getElementById('transit-bus-route-wrap');
+        const transitResult = document.getElementById('transit-result');
+        const localToday = new Date();
+        transitDateWrap.querySelector('input').value =
+            new Date(localToday.getTime() - localToday.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+        transitMode.addEventListener('change', () => {
+            const isBus = transitMode.value === 'bus';
+            transitCityWrap.classList.toggle('hidden', !isBus);
+            transitFromWrap.classList.toggle('hidden', isBus);
+            transitToWrap.classList.toggle('hidden', isBus);
+            transitDateWrap.classList.toggle('hidden', isBus);
+            transitBusWrap.classList.toggle('hidden', !isBus);
+        });
+        document.getElementById('btn-transit-query').addEventListener('click', async () => {
+            const button = document.getElementById('btn-transit-query');
+            const apiUrl = (window.GEMINI_PLANNER_API_URL || '').split('/api/plan').join('/api/transit');
+            const body = transitMode.value === 'rail'
+                ? { mode: 'rail', fromStation: document.getElementById('transit-from').value.trim(),
+                    toStation: document.getElementById('transit-to').value.trim(),
+                    date: document.getElementById('transit-date').value }
+                : { mode: 'bus', city: document.getElementById('transit-city').value,
+                    routeName: document.getElementById('transit-bus-route').value.trim() };
+            if (!apiUrl || apiUrl === window.GEMINI_PLANNER_API_URL) {
+                transitResult.textContent = '交通查詢服務網址尚未設定。';
+                transitResult.classList.remove('hidden');
+                return;
+            }
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>查詢中...';
+            transitResult.textContent = '正在向 TDX 查詢官方交通資料…';
+            transitResult.classList.remove('hidden');
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.error || '交通資料查詢失敗（HTTP ' + response.status + '）');
+                if (data.mode === 'rail') {
+                    const trains = Array.isArray(data.timetable) ? data.timetable : [];
+                    const fares = Array.isArray(data.fares) ? data.fares : [];
+                    const lines = [
+                        '臺鐵官方查詢｜' + data.date,
+                        data.from.name + '（上車）→ ' + data.to.name + '（下車）',
+                        '',
+                        trains.length ? '站間班次（原始官方資料，最多顯示 40 筆）：' : (data.note || '目前沒有班次資料。'),
+                        ...trains.map(item => JSON.stringify(item)),
+                        '',
+                        fares.length ? '票價資料（原始官方資料，最多顯示 30 筆）：' : 'TDX 此次未回傳票價資料。',
+                        ...fares.map(item => JSON.stringify(item)),
+                        '',
+                        '時刻表來源：' + data.timetableSource,
+                        '票價來源：' + data.fareSource
+                    ];
+                    transitResult.textContent = lines.join('\n');
+                } else {
+                    const route = data.route;
+                    if (!route) {
+                        transitResult.textContent = (data.error || '沒有符合的路線。') +
+                            (data.matches?.length ? '\n可查路線：\n' + data.matches.map(item =>
+                                item.routeName + '（' + (item.departure || '起點未提供') + '→' + (item.destination || '終點未提供') + '）'
+                            ).join('\n') : '') +
+                            '\n資料來源：' + (data.routeSource || '');
+                    } else {
+                        transitResult.textContent = [
+                            '公車官方查詢｜' + data.city,
+                            '路線：' + route.name + '（' + (route.departure || '起點未提供') + '→' + (route.destination || '終點未提供') + '）',
+                            '',
+                            '停靠站序官方資料：',
+                            ...(data.stops || []).map(item => JSON.stringify(item)),
+                            '',
+                            '定期班表官方資料：',
+                            ...(data.schedules || []).map(item => JSON.stringify(item)),
+                            '',
+                            '路線來源：' + data.routeSource,
+                            '停靠站來源：' + data.stopsSource,
+                            '班表來源：' + data.scheduleSource
+                        ].join('\n');
+                    }
+                }
+            } catch (error) {
+                transitResult.textContent = error.message || '交通資料暫時無法取得，請稍後再試。';
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-search mr-2"></i>查詢官方交通資料';
             }
         });
 
