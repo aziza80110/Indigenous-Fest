@@ -1,0 +1,11 @@
+name = "indigenous-fest-gemini-planner"
+main = "src/index.js"
+compatibility_date = "2026-11-09"
+
+[[ratelimits]]
+name = "PLAN_RATE_LIMITER"
+namespace_id = "73920481"
+
+[ratelimits.simple]
+limit = 5
+period = 60
