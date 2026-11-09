@@ -108,7 +108,7 @@
             <!-- 導覽 Tabs -->
             <div class="flex flex-wrap justify-center gap-2 md:gap-4 mt-8">
                 <button onclick="switchTab('encyclopedia')" id="tab-btn-encyclopedia" class="tab-btn px-6 py-3 rounded-full bg-white text-forest font-bold shadow-md hover:bg-gray-100 transition-all">
-                    <i class="fas fa-book-open mr-2"></i>16族百科
+                    <i class="fas fa-book-open mr-2"></i>17族百科
                 </button>
                 <button onclick="switchTab('calendar')" id="tab-btn-calendar" class="tab-btn px-6 py-3 rounded-full bg-transparent border border-white text-white font-bold hover:bg-white/10 transition-all">
                     <i class="fas fa-calendar-alt mr-2"></i>祭典行事曆
@@ -131,8 +131,8 @@
 
         <!-- Tab 1: 17 族百科與禁忌 -->
         <section id="tab-encyclopedia" class="tab-content active">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-primary inline-block pb-2">臺灣原住民族16族圖鑑</h2>
-            <p class="text-sm text-gray-600 mb-5 leading-6">族群介紹參考<a class="text-primary underline" href="https://www.cip.gov.tw/zh-tw/tribe/grid-list/index.html?cumid=8F19BF08AE220D65" target="_blank" rel="noopener noreferrer">原住民族委員會16族簡介</a>。祭儀由各部落傳承，請尊重族人對文化內容與影像分享的自主決定。</p>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-primary inline-block pb-2">臺灣原住民族17族圖鑑</h2>
+            <p class="text-sm text-gray-600 mb-5 leading-6">族群介紹參考<a class="text-primary underline" href="https://www.cip.gov.tw/zh-tw/tribe/grid-list/index.html?cumid=8F19BF08AE220D65" target="_blank" rel="noopener noreferrer">原民會16族簡介</a>與<a class="text-primary underline" href="https://www.cip.gov.tw/zh-tw/news/data-list/E93DA6B5E2130657/C782A9E0C4FE437EB952F7A111CC4239-info.html" target="_blank" rel="noopener noreferrer">西拉雅族核定公告</a>；西拉雅族為2026年核定的第17族。各部落祭儀由族人傳承，請尊重文化分享與影像規範。</p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tribes-container">
                 <!-- Tribe Cards injected via JS -->
             </div>
@@ -192,7 +192,7 @@
                                 <option value="雅美族（達悟族）">雅美族（達悟族）</option><option value="邵族">邵族</option>
                                 <option value="噶瑪蘭族">噶瑪蘭族</option><option value="太魯閣族">太魯閣族</option>
                                 <option value="撒奇萊雅族">撒奇萊雅族</option><option value="賽德克族">賽德克族</option>
-                                <option value="拉阿魯哇族">拉阿魯哇族</option><option value="卡那卡那富族">卡那卡那富族</option>
+                                <option value="拉阿魯哇族">拉阿魯哇族</option><option value="卡那卡那富族">卡那卡那富族</option><option value="西拉雅族">西拉雅族</option>
                                 <option value="不指定，請 AI 推薦">不指定，請 AI 推薦</option>
                             </select>
                         </div>
@@ -348,7 +348,7 @@
         // ----------------------------------------------------------------------
         // 2. Mock 靜態資料結構 (代替完整 DB 以利單一檔案運作)
         // ----------------------------------------------------------------------
-        // 官方認定16族；祭儀時序僅列常見季節，確切日期及開放範圍以主辦部落當年公告為準。
+        // 官方核定17族；祭儀時序僅列常見季節，確切日期及開放範圍以主辦部落當年公告為準。
         const MOCK_TRIBES = [
             {id:"amis",name:"阿美族",romanizedName:"Amis / Pangcah",regions:["花蓮縣","臺東縣"],summary:"部落分布於東部海岸、縱谷與平原；以年齡組織、歌舞及豐年祭維繫部落互助與文化傳承。",culturalTaboos:["祭典各階段規範由部落訂定，先確認祭典是否開放觀禮及相關方式。","拍攝族人、祭儀及家屋前先徵得同意。","依主辦方動線與指引行動，不擅闖管制區。"],iconSymbol:"☀️",color:"border-red-500"},
             {id:"tayal",name:"泰雅族",romanizedName:"Tayal / Atayal",regions:["新北市","桃園市","新竹縣","苗栗縣","臺中市","宜蘭縣"],summary:"以gaga（祖訓與規範）、織布與傳統紋面文化著稱；部落分布跨越北部及中部山區。",culturalTaboos:["祖靈祭及家族儀式多有內部規範，未獲邀請不要求參與。","進入部落及山林前先洽詢在地接待者。","不觸碰祭具、獵具或私人家屋物品。"],iconSymbol:"🧶",color:"border-red-700"},
@@ -365,7 +365,8 @@
             {id:"sakizaya",name:"撒奇萊雅族",romanizedName:"Sakizaya",regions:["花蓮縣花蓮市、豐濱鄉等地"],summary:"以火神祭Palamal及族群復名歷程為重要文化記憶；祭儀延續集體認同與歷史傳承。",culturalTaboos:["火神祭等公開活動仍應依現場規範觀禮。","祭儀影像、人物特寫先取得同意。","以族人認可的族名與文化說法稱呼，避免把祭儀當表演。"],iconSymbol:"🔥",color:"border-orange-700"},
             {id:"seediq",name:"賽德克族",romanizedName:"Seediq",regions:["南投縣仁愛鄉","花蓮縣萬榮鄉","花蓮縣秀林鄉"],summary:"以祖訓gaya、織布與部落歷史記憶為重要文化脈絡；各部落祭儀及復振方式各有特色。",culturalTaboos:["祖靈祭或部落活動的開放範圍以主辦者公告為準。","不要求族人重述創傷歷史或拍攝未同意的儀式。","尊重部落對文化內容、影像及導覽的自主權。"],iconSymbol:"🧵",color:"border-rose-700"},
             {id:"hlaalua",name:"拉阿魯哇族",romanizedName:"Hla'alua",regions:["高雄市桃源區"],summary:"以聖貝祭miatungusu等祭儀展現部落組織與祖靈信仰；傳統祭儀由族人共同承續。",culturalTaboos:["聖貝祭等祭儀依部落安排，觀禮須先確認規範。","聖貝、祭器及男子集會空間不可擅自觸碰或進入。","祭儀細節以族人公開分享與主辦方說明為準。"],iconSymbol:"🐚",color:"border-violet-700"},
-            {id:"kanakanavu",name:"卡那卡那富族",romanizedName:"Kanakanavu",regions:["高雄市那瑪夏區"],summary:"以Mikongu（米貢祭）及河祭等文化傳統凝聚族人，祭儀保有部落自主與共同參與特色。",culturalTaboos:["Mikongu、河祭的日期及觀禮規範依部落公告。","勿擅入祭場、男子集會所或河祭作業區。","拍攝、錄音及分享祭儀資料前先取得主辦者同意。"],iconSymbol:"🌿",color:"border-lime-700"}
+            {id:"kanakanavu",name:"卡那卡那富族",romanizedName:"Kanakanavu",regions:["高雄市那瑪夏區"],summary:"以Mikongu（米貢祭）及河祭等文化傳統凝聚族人，祭儀保有部落自主與共同參與特色。",culturalTaboos:["Mikongu、河祭的日期及觀禮規範依部落公告。","勿擅入祭場、男子集會所或河祭作業區。","拍攝、錄音及分享祭儀資料前先取得主辦者同意。"],iconSymbol:"🌿",color:"border-lime-700"},
+            {id:"siraya",name:"西拉雅族",romanizedName:"Siraya",regions:["臺南市","高雄市及屏東縣部分社群"],summary:"2026年經行政院核定為平埔原住民族群；以公廨、阿立祖／阿立母信仰、牽曲與夜祭等文化實踐承載部落歷史，各社群傳統有別。",culturalTaboos:["夜祭及公廨祭儀並非一般表演，觀禮範圍依主辦部落公告。","進入公廨或拍攝族人、祭儀前，先取得主辦者同意。","不同西拉雅部落的日期與儀式不可混為一談。"],iconSymbol:"🌾",color:"border-amber-700"}
         ];
 
         const MOCK_FESTIVALS = [
@@ -384,7 +385,8 @@
             {tribe:"撒奇萊雅族",name:"火神祭 Palamal",date:"每年祭期依部落公告",location:"花蓮縣撒奇萊雅族部落",status:"schedule",isPublic:true,desc:"紀念族群歷史、延續文化認同的重要祭儀。即使有公開活動，仍須尊重儀式區域與影像規範。"},
             {tribe:"賽德克族",name:"祖靈祭 / 收穫祭",date:"依部落祭儀曆與當年公告",location:"南投、花蓮賽德克族部落",status:"schedule",isPublic:false,desc:"呈現祖訓gaya、祖靈信仰與部落傳承。各部落祭儀安排及公開程度不同，參訪前向主辦者確認。"},
             {tribe:"拉阿魯哇族",name:"聖貝祭 Miatungusu",date:"依部落公告",location:"高雄市桃源區",status:"schedule",isPublic:false,desc:"重要祭儀之一，呈現族人共同籌備、部落組織與祖靈信仰。祭儀空間、時程及是否開放由主辦部落決定。"},
-            {tribe:"卡那卡那富族",name:"米貢祭 Mikongu / 河祭",date:"依部落公告",location:"高雄市那瑪夏區",status:"schedule",isPublic:false,desc:"米貢祭與河祭是重要傳統祭儀，凝聚家族與部落共同參與。實際時程及觀禮規範應以卡那卡那富族部落公告為準。"}
+            {tribe:"卡那卡那富族",name:"米貢祭 Mikongu / 河祭",date:"依部落公告",location:"高雄市那瑪夏區",status:"schedule",isPublic:false,desc:"米貢祭與河祭是重要傳統祭儀，凝聚家族與部落共同參與。實際時程及觀禮規範應以卡那卡那富族部落公告為準。"},
+            {tribe:"西拉雅族",name:"吉貝耍 Ta-ai 夜祭／孝海祭",date:"傳統上多在農曆九月；國曆日期每年不同，各部落各有祭儀曆",location:"臺南市東山區吉貝耍部落等西拉雅社群",status:"schedule",isPublic:false,desc:"吉貝耍部落以牽曲、拜豬等儀式向阿立母還願與感謝庇佑，翌日孝海祭追念渡海先人。此為吉貝耍的祭儀介紹，不代表全族；參訪、攝影與開放方式以當年主辦公告為準。"}
         ];
 
         const WEATHER_LOCATIONS = [
@@ -403,7 +405,8 @@
             {tribe:"撒奇萊雅族",areas:"花蓮縣花蓮市、豐濱鄉等地"},
             {tribe:"賽德克族",areas:"南投縣仁愛鄉、花蓮縣萬榮鄉及秀林鄉"},
             {tribe:"拉阿魯哇族",areas:"高雄市桃源區"},
-            {tribe:"卡那卡那富族",areas:"高雄市那瑪夏區"}
+            {tribe:"卡那卡那富族",areas:"高雄市那瑪夏區"},
+            {tribe:"西拉雅族",areas:"臺南市為主要文化分布地，並有南部其他社群；祭儀依各部落傳承"}
         ];
 
         // ----------------------------------------------------------------------
@@ -446,7 +449,7 @@
             activeBtn.classList.add('bg-white', 'text-forest', 'shadow-md');
         };
 
-        // 渲染16族簡介、英文族名與官方資料補充
+        // 渲染17族簡介、英文族名與官方資料補充
         async function renderTribes() {
             const container = document.getElementById('tribes-container');
             const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({
@@ -475,7 +478,7 @@
                     ? `<details class="mb-4 rounded-lg border border-gray-200 bg-white p-3">
                            <summary class="cursor-pointer text-sm font-bold text-forest">閱讀詳細族群介紹</summary>
                            <p class="mt-3 text-sm leading-7 text-gray-700">${escapeHtml(details.introduction)}</p>
-                           <a class="mt-2 inline-block text-xs text-primary underline" href="${escapeHtml(details.sourceUrl)}" target="_blank" rel="noopener noreferrer">查看原民會此族官方介紹</a>
+                           <a class="mt-2 inline-block text-xs text-primary underline" href="${escapeHtml(details.sourceUrl)}" target="_blank" rel="noopener noreferrer">查看官方族群來源資料</a>
                        </details>`
                     : '<p class="mb-4 text-sm text-gray-500">詳細資料暫時無法載入。</p>';
 
@@ -531,7 +534,7 @@
                     <aside class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
                         <strong>${escapeHtml(referenceData.referenceYear)}年度官方祭期參考（非活動確切日期）</strong>
                         <p class="mt-1">${escapeHtml(referenceData.note)}</p>
-                        <a class="mt-2 inline-block font-semibold underline" href="${escapeHtml(referenceData.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(referenceData.sourceTitle)}（原民會公告）</a>
+                        <a class="mt-2 inline-block font-semibold underline" href="${escapeHtml(referenceData.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(referenceData.sourceTitle)}（官方參考資料）</a>
                     </aside>`;
             } else {
                 html += '<aside class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">官方參考資料目前無法載入；請稍後再試，或直接查詢原民會年度公告。</aside>';
@@ -544,14 +547,14 @@
                            <strong class="text-amber-900">${escapeHtml(reference.referenceLabel || '115年度官方參考期間')}：</strong>
                            <span>${escapeHtml(reference.period)}</span>
                            <p class="mt-1 text-xs text-gray-600">${escapeHtml(reference.note || '')}</p>
-                           <a class="mt-1 inline-block text-xs text-primary underline" href="${escapeHtml(referenceData.sourceUrl)}" target="_blank" rel="noopener noreferrer">查看原民會年度公告</a>
+                           <a class="mt-1 inline-block text-xs text-primary underline" href="${escapeHtml(reference.periodSourceUrl || referenceData.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(reference.periodSourceLabel || "查看原民會年度公告")}</a>
                        </div>`
                     : '<p class="mt-3 text-sm text-gray-500">目前沒有可核實的官方參考區間。</p>';
                 const storyHtml = reference?.story
                     ? `<section class="mt-3 rounded-lg border border-gray-200 bg-white p-3">
                            <h4 class="text-sm font-bold text-forest">${escapeHtml(reference.storyType || '祭典典故與故事')}</h4>
                            <p class="mt-2 text-sm leading-6 text-gray-700">${escapeHtml(reference.story)}</p>
-                           <a class="mt-2 inline-block text-xs text-primary underline" href="${escapeHtml(reference.storySourceUrl || referenceData.sourceUrl)}" target="_blank" rel="noopener noreferrer">查看此族原民會文化資料</a>
+                           <a class="mt-2 inline-block text-xs text-primary underline" href="${escapeHtml(reference.storySourceUrl || referenceData.sourceUrl)}" target="_blank" rel="noopener noreferrer">查看祭典故事來源</a>
                        </section>`
                     : '<p class="mt-3 text-sm text-gray-500">尚無可引用的故事來源。</p>';
 
@@ -753,7 +756,7 @@
                     </div>
                     <div class="mt-4">
                         <h3 class="font-bold text-lg text-primary">經典推薦：${tribe} ${days}日遊</h3>
-                        <p>請前往首頁【16族百科】查閱相關禁忌，並利用【祭典行事曆】確認活動開放狀態。</p>
+                        <p>請前往首頁【17族百科】查閱相關禁忌，並利用【祭典行事曆】確認活動開放狀態。</p>
                         <p class="text-gray-500 text-sm mt-2">（此為系統自動降級回應）</p>
                     </div>
                 `;
