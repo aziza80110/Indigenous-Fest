@@ -1,8 +1,8 @@
 {
   "source": "中央氣象署鄉鎮未來一週預報",
   "sourceUrl": "https://opendata.cwa.gov.tw/dist/opendata-swagger.html",
-  "generatedAt": "2026-11-09T19:12:38+08:00",
-  "matchedTownCount": 25,
+  "generatedAt": "2026-11-09T21:55:35+08:00",
+  "matchedTownCount": 26,
   "forecasts": [
     {
       "tribe": "阿美族",
@@ -328,6 +328,19 @@
       "forecastStart": "2026-11-09T18:00:00+08:00",
       "forecastEnd": "2026-11-10T06:00:00+08:00",
       "datasetId": "F-D0047-067"
+    },
+    {
+      "tribe": "西拉雅族",
+      "county": "臺南市",
+      "town": "東山區",
+      "weather": "晴時多雲。降雨機率10%。溫度攝氏17至22度。稍有寒意至舒適。偏北風 風速3級(每秒4公尺)。相對濕度67%。",
+      "phenomenon": "晴時多雲",
+      "minTemperature": "17",
+      "maxTemperature": "22",
+      "precipitationProbability": "10",
+      "forecastStart": "2026-11-09T18:00:00+08:00",
+      "forecastEnd": "2026-11-10T06:00:00+08:00",
+      "datasetId": "F-D0047-079"
     }
   ],
   "notice": "每族列出代表鄉鎮，不代表整個族群分布區域；祭典預報請以實際舉辦鄉鎮為準。資料通常涵蓋未來一週，較遠日期不可視為精確預報。"
