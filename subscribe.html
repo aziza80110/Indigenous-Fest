@@ -32,7 +32,7 @@
       <input id="email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="name@example.com">
       <fieldset class="group">
         <legend><strong>選擇祭典通知</strong></legend>
-        <label style="display:flex;gap:.55rem;margin:.3rem 0 1rem"><input id="select-all" type="checkbox"> 全部16族</label>
+        <label style="display:flex;gap:.55rem;margin:.3rem 0 1rem"><input id="select-all" type="checkbox"> 全部17族</label>
         <div class="choices" id="tribe-choices"></div>
       </fieldset>
       <label class="consent"><input id="consent" type="checkbox" required><span>我同意使用此信箱及所選族群偏好寄送祭典旅遊通知，並知道可透過每封通知中的取消連結停止收信。</span></label>
@@ -60,7 +60,7 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const tribes = ["阿美族","泰雅族","排灣族","布農族","卑南族","魯凱族","鄒族","賽夏族","雅美族（達悟族）","邵族","噶瑪蘭族","太魯閣族","撒奇萊雅族","賽德克族","拉阿魯哇族","卡那卡那富族"];
+  const tribes = ["阿美族","泰雅族","排灣族","布農族","卑南族","魯凱族","鄒族","賽夏族","雅美族（達悟族）","邵族","噶瑪蘭族","太魯閣族","撒奇萊雅族","賽德克族","拉阿魯哇族","卡那卡那富族","西拉雅族"];
   const form = document.getElementById("subscription-form");
   const emailInput = document.getElementById("email");
   const statusBox = document.getElementById("status");
