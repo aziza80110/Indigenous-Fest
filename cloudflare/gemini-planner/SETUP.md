@@ -10,11 +10,12 @@
 ## B. 在 Cloudflare 建立 Worker 並連到 GitHub
 
 1. 登入 [Cloudflare Dashboard](https://dash.cloudflare.com/)。
-2. 左側選 **Workers & Pages**，按 **Create application**，選 **Connect to Git** / **Import a repository**。
-3. 授權 GitHub 後選 **aziza80110/Indigenous-Fest**。
-4. Worker 名稱填 `indigenous-fest-gemini-planner`；專案根目錄（Root directory）填 `cloudflare/gemini-planner`。
-5. 保留 Wrangler 設定自動偵測，確認讀到此資料夾的 `wrangler.toml`。如需 Build command，留空；如需 Deploy command，填 `npx wrangler deploy`，再按 **Deploy**。
-6. 部署成功後，記下 Cloudflare 顯示的 Worker 網址，格式類似 `https://indigenous-fest-gemini-planner.<你的子網域>.workers.dev`。
+2. 左側選 **Workers & Pages**，按 **Create application → Connect GitHub**。
+3. 授權 GitHub 後，只選 `aziza80110/Indigenous-Fest` 儲存庫。
+4. Project name 填 `indigenous-fest-gemini-planner`。
+5. Build command 留空。Deploy command 填 `npx wrangler deploy --config cloudflare/gemini-planner/wrangler.toml`；Preview command 填 `npx wrangler preview --config cloudflare/gemini-planner/wrangler.toml`。這會讓 Cloudflare 從儲存庫根目錄使用子資料夾內的 Wrangler 設定。
+6. 確認名稱與指令後按 **Deploy**。
+7. 部署成功後，記下 Cloudflare 顯示的 Worker 網址，格式類似 `https://indigenous-fest-gemini-planner.<你的子網域>.workers.dev`。
 
 ## C. 將金鑰存進 Worker
 
