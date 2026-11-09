@@ -90,13 +90,14 @@ export default {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: "你是尊重台灣原住民族文化的旅遊規劃助理。只提供安全、誠實、尊重部落自主的規劃草案。不得臆測即時資料或將族群文化簡化為單一規則。" }] },
           contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.5, topP: 0.9, maxOutputTokens: 3000 }
+          generationConfig: { maxOutputTokens: 3000 }
         })
       });
       if (!response.ok) {
-        return json({ error: response.status === 429
-          ? "Gemini 目前忙碌或達到使用上限，請稍後再試。"
-          : "Gemini 暫時無法完成規劃，請稍後再試。" }, 502, origin);
+        const message = response.status === 429
+          ? "Gemini 使用額度或速率暫時受限（HTTP 429），請稍後再試。"
+          : `Gemini API 暫時無法完成規劃（HTTP ${response.status}），請稍後再試。`;
+        return json({ error: message }, 502, origin);
       }
       const data = await response.json();
       const text = data?.candidates?.[0]?.content?.parts?.map(part =>
