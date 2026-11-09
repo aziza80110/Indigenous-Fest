@@ -386,7 +386,7 @@
             {tribe:"賽德克族",name:"祖靈祭 / 收穫祭",date:"依部落祭儀曆與當年公告",location:"南投、花蓮賽德克族部落",status:"schedule",isPublic:false,desc:"呈現祖訓gaya、祖靈信仰與部落傳承。各部落祭儀安排及公開程度不同，參訪前向主辦者確認。"},
             {tribe:"拉阿魯哇族",name:"聖貝祭 Miatungusu",date:"依部落公告",location:"高雄市桃源區",status:"schedule",isPublic:false,desc:"重要祭儀之一，呈現族人共同籌備、部落組織與祖靈信仰。祭儀空間、時程及是否開放由主辦部落決定。"},
             {tribe:"卡那卡那富族",name:"米貢祭 Mikongu / 河祭",date:"依部落公告",location:"高雄市那瑪夏區",status:"schedule",isPublic:false,desc:"米貢祭與河祭是重要傳統祭儀，凝聚家族與部落共同參與。實際時程及觀禮規範應以卡那卡那富族部落公告為準。"},
-            {tribe:"西拉雅族",name:"吉貝耍 Ta-ai 夜祭／孝海祭",date:"傳統上多在農曆九月；國曆日期每年不同，各部落各有祭儀曆",location:"臺南市東山區吉貝耍部落等西拉雅社群",status:"schedule",isPublic:false,desc:"吉貝耍部落以牽曲、拜豬等儀式向阿立母還願與感謝庇佑，翌日孝海祭追念渡海先人。此為吉貝耍的祭儀介紹，不代表全族；參訪、攝影與開放方式以當年主辦公告為準。"}
+            {tribe:"西拉雅族",name:"吉貝耍 Ta-ai 夜祭／孝海祭",date:"吉貝耍部落依農曆九月祭期；其他社群日期不同，國曆日期每年變動",location:"臺南市東山區吉貝耍部落等西拉雅社群",status:"schedule",isPublic:false,desc:"吉貝耍部落以牽曲、拜豬等儀式向阿立母還願與感謝庇佑，翌日孝海祭追念渡海先人。此為吉貝耍的祭儀介紹，不代表全族；參訪、攝影與開放方式以當年主辦公告為準。"}
         ];
 
         const WEATHER_LOCATIONS = [
@@ -477,8 +477,10 @@
                 const detailedIntroduction = details
                     ? `<details class="mb-4 rounded-lg border border-gray-200 bg-white p-3">
                            <summary class="cursor-pointer text-sm font-bold text-forest">閱讀詳細族群介紹</summary>
+                           ${details.statusNote ? `<p class="mt-3 text-xs font-semibold text-amber-800">${escapeHtml(details.statusNote)}</p>` : ''}
                            <p class="mt-3 text-sm leading-7 text-gray-700">${escapeHtml(details.introduction)}</p>
-                           <a class="mt-2 inline-block text-xs text-primary underline" href="${escapeHtml(details.sourceUrl)}" target="_blank" rel="noopener noreferrer">查看官方族群來源資料</a>
+                           <a class="mt-2 inline-block text-xs text-primary underline" href="${escapeHtml(details.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(details.sourceLabel || '查看官方來源資料')}</a>
+                           ${details.cultureSourceUrl ? `<a class="ml-3 mt-2 inline-block text-xs text-primary underline" href="${escapeHtml(details.cultureSourceUrl)}" target="_blank" rel="noopener noreferrer">查看文化資料</a>` : ''}
                        </details>`
                     : '<p class="mb-4 text-sm text-gray-500">詳細資料暫時無法載入。</p>';
 
@@ -554,7 +556,7 @@
                     ? `<section class="mt-3 rounded-lg border border-gray-200 bg-white p-3">
                            <h4 class="text-sm font-bold text-forest">${escapeHtml(reference.storyType || '祭典典故與故事')}</h4>
                            <p class="mt-2 text-sm leading-6 text-gray-700">${escapeHtml(reference.story)}</p>
-                           <a class="mt-2 inline-block text-xs text-primary underline" href="${escapeHtml(reference.storySourceUrl || referenceData.sourceUrl)}" target="_blank" rel="noopener noreferrer">查看祭典故事來源</a>
+                           <a class="mt-2 inline-block text-xs text-primary underline" href="${escapeHtml(reference.storySourceUrl || referenceData.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(reference.storySourceLabel || '查看祭典故事來源')}</a>
                        </section>`
                     : '<p class="mt-3 text-sm text-gray-500">尚無可引用的故事來源。</p>';
 
