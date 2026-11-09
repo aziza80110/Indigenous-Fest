@@ -1,5 +1,5 @@
 const ALLOWED_ORIGIN = "https://aziza80110.github.io";
-const MODEL = "gemini-3.8-flash";
+const MODEL = "gemini-3.5-flash-lite";
 const MAX_BODY_BYTES = 4000;
 const ALLOWED_TRIBES = new Set([
   "阿美族", "泰雅族", "排灣族", "布農族", "卑南族", "魯凱族", "鄒族",
