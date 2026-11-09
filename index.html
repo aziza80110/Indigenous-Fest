@@ -270,6 +270,9 @@
         </div>
     </footer>
 
+    <!-- Gemini Worker 網址；API 金鑰只保存在 Cloudflare Worker Secret -->
+    <script src="./planner-config.js"></script>
+
     <!-- Firebase & 應用程式邏輯 -->
     <script type="module">
         // ----------------------------------------------------------------------
@@ -696,74 +699,34 @@
             loadingState.classList.remove('hidden');
             saveBtn.classList.add('hidden');
 
-            const prompt = `
-                我是一個熱愛文化的旅客，計畫從「${origin}」出發，進行「${days}」天的台灣原住民部落旅遊，
-                主要探索目標是「${tribe}」，我的同行型態與偏好為：「${preference}」。
-                請幫我規劃一份具備深度的旅遊行程。
-                
-                內容必須包含以下結構 (請用 Markdown 語法)：
-                1. 行程總覽 (簡短標題與摘要)
-                2. 每日時間軸 (Day 1, Day 2...)：包含交通建議、推薦景點。
-                3. 食宿推薦：在地風味餐飲與特色合法住宿建議。
-                4. **⚠️ 文化禁忌與注意事項 (極重要)**：請針對該族群列出至少 3 點參訪時必須遵守的禁忌或禮儀。
-                
-                請以繁體中文回覆，語氣專業且尊重文化。不要包含任何 Markdown code block 反引號 (\`\`\`markdown) 包覆，直接輸出 Markdown 內容。
-            `;
-
             try {
-                // 使用 Gemini API (API Key 由系統自動帶入)
-                const apiKey = ""; 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-                
+                const apiUrl = window.GEMINI_PLANNER_API_URL || "";
+                if (!apiUrl || apiUrl.includes("YOUR-SUBDOMAIN")) {
+                    throw new Error("尚未設定 Cloudflare Worker 網址。");
+                }
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }],
-                        generationConfig: {
-                            temperature: 0.7,
-                            topP: 0.9,
-                        }
-                    })
+                    body: JSON.stringify({ origin, days: daysNumber, tribe, preference })
                 });
-
-                if (!response.ok) throw new Error(`API 請求失敗狀態碼: ${response.status}`);
-                
-                const data = await response.json();
-                
-                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
-                    currentGeneratedMarkdown = data.candidates[0].content.parts[0].text;
-                    
-                    // 渲染 Markdown
-                    contentState.innerHTML = marked.parse(currentGeneratedMarkdown);
-                    
-                    loadingState.classList.add('hidden');
-                    contentState.classList.remove('hidden');
-                    if (currentUser) {
-                        saveBtn.classList.remove('hidden'); // 登入才顯示儲存按鈕
-                    }
-                } else {
-                    throw new Error("API 回傳格式異常");
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.error || `行程服務回應錯誤（${response.status}）`);
+                if (typeof data.text !== 'string' || !data.text.trim()) {
+                    throw new Error("行程服務沒有回傳可顯示的內容。");
                 }
-
+                currentGeneratedMarkdown = data.text.trim();
+                // 以純文字呈現模型回覆，避免執行回覆中的 HTML。
+                contentState.textContent = currentGeneratedMarkdown;
+                loadingState.classList.add('hidden');
+                contentState.classList.remove('hidden');
+                if (currentUser) saveBtn.classList.remove('hidden');
             } catch (error) {
                 console.error("Gemini AI Error:", error);
                 loadingState.classList.add('hidden');
-                
-                // Fallback 機制
-                contentState.innerHTML = `
-                    <div class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg">
-                        <h3 class="font-bold mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>AI 祭儀管家目前繁忙</h3>
-                        <p class="text-sm mb-4">無法取得即時生成結果，已為您載入推薦的備用行程。</p>
-                    </div>
-                    <div class="mt-4">
-                        <h3 class="font-bold text-lg text-primary">經典推薦：${tribe} ${days}日遊</h3>
-                        <p>請前往首頁【17族百科】查閱相關禁忌，並利用【祭典行事曆】確認活動開放狀態。</p>
-                        <p class="text-gray-500 text-sm mt-2">（此為系統自動降級回應）</p>
-                    </div>
-                `;
+                contentState.textContent = error.message || "AI 行程服務暫時無法使用，請稍後再試。";
                 contentState.classList.remove('hidden');
-                showMessage("AI 生成失敗，已切換至備用模式", "error");
+                showMessage("AI 行程規劃暫時無法完成，請稍後重試。", "error");
+            }
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-magic mr-2"></i> 重新規劃';
