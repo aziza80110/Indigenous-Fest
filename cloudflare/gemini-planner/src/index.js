@@ -93,7 +93,7 @@ function tdxError(error, origin) {
     return json({ error: "TDX 已拒絕此資料服務，請確認會員方案是否已授權臺鐵／公車基礎 API。" }, 502, origin);
   }
   if (code.startsWith("TDX_API_429")) return json({ error: "TDX 查詢頻率已達限制，請稍後再試。" }, 429, origin);
-  const diagnostic = /^TDX_(?:TOKEN|API)_\\d{3}$/.test(code) ? code : "TDX_NETWORK_OR_RESPONSE";
+  const diagnostic = /^TDX_(?:TOKEN|API)_\d{3}$/.test(code) ? code : "TDX_NETWORK_OR_RESPONSE";
   return json({ error: "TDX 交通資料暫時無法取得，請稍後再試。", diagnostic }, 502, origin);
 }
 async function handleTransit(body, env, origin) {
