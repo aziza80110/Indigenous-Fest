@@ -84,15 +84,20 @@ export default {
     ].join("\n");
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: "你是尊重台灣原住民族文化的旅遊規劃助理。只提供安全、誠實、尊重部落自主的規劃草案。不得臆測即時資料或將族群文化簡化為單一規則。" }] },
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 3000 }
-        })
-      });
+      let response;
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: "你是尊重台灣原住民族文化的旅遊規劃助理。只提供安全、誠實、尊重部落自主的規劃草案。不得臆測即時資料或將族群文化簡化為單一規則。" }] },
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            generationConfig: { maxOutputTokens: 3000 }
+          })
+        });
+        if (response.status !== 503 || attempt === 1) break;
+        await new Promise(resolve => setTimeout(resolve, 800));
+      }
       if (!response.ok) {
         const message = response.status === 429
           ? "Gemini 使用額度或速率暫時受限（HTTP 429），請稍後再試。"
