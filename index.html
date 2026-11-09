@@ -273,11 +273,11 @@
                     </div>
                     <div id="transit-rail-from-wrap">
                         <label for="transit-from" class="block text-sm font-medium text-gray-700 mb-1">臺鐵上車站</label>
-                        <input id="transit-from" maxlength="40" placeholder="例如：臺北" class="w-full px-4 py-2 border rounded-lg">
+                        <select id="transit-from" class="w-full px-4 py-2 border rounded-lg"><option value="">載入臺鐵車站中…</option></select>
                     </div>
                     <div id="transit-rail-to-wrap">
                         <label for="transit-to" class="block text-sm font-medium text-gray-700 mb-1">臺鐵下車站</label>
-                        <input id="transit-to" maxlength="40" placeholder="例如：花蓮" class="w-full px-4 py-2 border rounded-lg">
+                        <select id="transit-to" class="w-full px-4 py-2 border rounded-lg"><option value="">載入臺鐵車站中…</option></select>
                     </div>
                     <div id="transit-date-wrap">
                         <label for="transit-date" class="block text-sm font-medium text-gray-700 mb-1">搭乘日期</label>
@@ -292,7 +292,7 @@
                     <i class="fas fa-search mr-2"></i>查詢官方交通資料
                 </button>
                 <p class="text-xs text-gray-500 mt-3">查詢結果附 TDX 來源連結。班表與票價以官方最新回傳資料為準；出發前仍請至營運單位確認異動。</p>
-                <pre id="transit-result" class="hidden whitespace-pre-wrap break-words bg-stone-50 border rounded-xl p-4 mt-5 text-sm text-gray-800 overflow-auto max-h-[32rem]" aria-live="polite"></pre>
+                <div id="transit-result" class="hidden bg-stone-50 border rounded-xl p-4 mt-5 text-sm text-gray-800 overflow-auto max-h-[40rem]" aria-live="polite"></div>
             </section>
 
             <!-- 收藏清單區塊 -->
@@ -813,6 +813,58 @@
             transitDateWrap.classList.toggle('hidden', isBus);
             transitBusWrap.classList.toggle('hidden', !isBus);
         });
+        const escapeTransitHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[char]));
+        const transitLabel = value => {
+            if (typeof value === 'string' || typeof value === 'number') return String(value);
+            if (!value || typeof value !== 'object') return '';
+            return value.Zh_tw || value.zh_tw || value.En || value.Ja || '';
+        };
+        const transitTable = (headers, rows) => {
+            if (!rows.length) return '<p class="rounded-lg bg-white p-4 text-gray-500">官方資料目前沒有可顯示的項目。</p>';
+            return '<div class="overflow-x-auto rounded-lg border border-gray-200 bg-white"><table class="min-w-full divide-y divide-gray-200 text-left"><thead class="bg-gray-100"><tr>' +
+                headers.map(header => '<th scope="col" class="whitespace-nowrap px-3 py-2 font-semibold">' + escapeTransitHtml(header) + '</th>').join('') +
+                '</tr></thead><tbody class="divide-y divide-gray-100">' +
+                rows.map(row => '<tr class="odd:bg-white even:bg-stone-50">' + row.map(value => '<td class="px-3 py-2 align-top">' + escapeTransitHtml(value || '—') + '</td>').join('') + '</tr>').join('') +
+                '</tbody></table></div>';
+        };
+        const transitSourceLink = (url, label) =>
+            '<a class="text-primary underline underline-offset-2" href="' + escapeTransitHtml(url) + '" target="_blank" rel="noopener noreferrer">' +
+            escapeTransitHtml(label) + '</a>';
+
+        async function loadRailStations() {
+            const fromSelect = document.getElementById('transit-from');
+            const toSelect = document.getElementById('transit-to');
+            const apiUrl = (window.GEMINI_PLANNER_API_URL || '').split('/api/plan').join('/api/transit');
+            if (!apiUrl || apiUrl === window.GEMINI_PLANNER_API_URL) {
+                fromSelect.innerHTML = '<option value="">車站清單暫時無法載入</option>';
+                toSelect.innerHTML = '<option value="">車站清單暫時無法載入</option>';
+                return;
+            }
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mode: 'stations' })
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.error || '車站清單載入失敗');
+                const stations = Array.isArray(data.stations) ? data.stations : [];
+                if (!stations.length) throw new Error('TDX 沒有回傳車站清單');
+                const options = stations.map(station =>
+                    '<option value="' + escapeTransitHtml(station.name) + '">' + escapeTransitHtml(station.name) + '</option>'
+                ).join('');
+                fromSelect.innerHTML = '<option value="">請選擇上車站</option>' + options;
+                toSelect.innerHTML = '<option value="">請選擇下車站</option>' + options;
+            } catch (error) {
+                fromSelect.innerHTML = '<option value="">車站清單載入失敗，請重新整理</option>';
+                toSelect.innerHTML = '<option value="">車站清單載入失敗，請重新整理</option>';
+                console.error('TDX station list error:', error);
+            }
+        }
+        loadRailStations();
+
         document.getElementById('btn-transit-query').addEventListener('click', async () => {
             const button = document.getElementById('btn-transit-query');
             const apiUrl = (window.GEMINI_PLANNER_API_URL || '').split('/api/plan').join('/api/transit');
@@ -842,43 +894,96 @@
                 if (data.mode === 'rail') {
                     const trains = Array.isArray(data.timetable) ? data.timetable : [];
                     const fares = Array.isArray(data.fares) ? data.fares : [];
-                    const lines = [
-                        '臺鐵官方查詢｜' + data.date,
-                        data.from.name + '（上車）→ ' + data.to.name + '（下車）',
-                        '',
-                        trains.length ? '站間班次（原始官方資料，最多顯示 40 筆）：' : (data.note || '目前沒有班次資料。'),
-                        ...trains.map(item => JSON.stringify(item)),
-                        '',
-                        fares.length ? '票價資料（原始官方資料，最多顯示 30 筆）：' : 'TDX 此次未回傳票價資料。',
-                        ...fares.map(item => JSON.stringify(item)),
-                        '',
-                        '時刻表來源：' + data.timetableSource,
-                        '票價來源：' + data.fareSource
-                    ];
-                    transitResult.textContent = lines.join('\n');
+                    const requestedFrom = data.from?.name || body.fromStation;
+                    const requestedTo = data.to?.name || body.toStation;
+                    const findStop = (stops, stationName, fallback) =>
+                        stops.find(stop => transitLabel(stop.StationName).trim() === stationName) || fallback || {};
+                    const trainRows = trains.map(item => {
+                        const info = item.TrainInfo || {};
+                        const stops = Array.isArray(item.StopTimes) ? item.StopTimes : [];
+                        const fromStop = findStop(stops, requestedFrom, stops[0]);
+                        const toStop = findStop(stops, requestedTo, stops[stops.length - 1]);
+                        const fromTime = fromStop.DepartureTime || fromStop.ArrivalTime || '';
+                        const toTime = toStop.ArrivalTime || toStop.DepartureTime || '';
+                        return [
+                            info.TrainNo || item.TrainNo || '',
+                            transitLabel(info.TrainTypeName || item.TrainTypeName),
+                            transitLabel(info.TripHeadSign),
+                            transitLabel(fromStop.StationName) + (fromTime ? ' ' + fromTime : ''),
+                            transitLabel(toStop.StationName) + (toTime ? ' ' + toTime : ''),
+                            transitLabel(info.Note)
+                        ];
+                    });
+                    const fareRows = fares.flatMap(item => (Array.isArray(item.Fares) ? item.Fares : []).map(fare => [
+                        transitLabel(item.OriginStationName) + ' → ' + transitLabel(item.DestinationStationName),
+                        fare.TicketType ?? '',
+                        fare.FareClass ?? '',
+                        fare.CabinClass ?? '',
+                        Number.isFinite(Number(fare.Price)) ? 'NT$ ' + Number(fare.Price).toLocaleString('zh-TW') : ''
+                    ]));
+                    transitResult.innerHTML =
+                        '<div class="space-y-5">' +
+                            '<header><h4 class="text-lg font-bold text-forest">臺鐵查詢結果</h4>' +
+                                '<p class="mt-1">搭乘日期：' + escapeTransitHtml(data.date || '') + '</p>' +
+                                '<p>' + escapeTransitHtml(requestedFrom) + '（上車）→ ' + escapeTransitHtml(requestedTo) + '（下車）</p></header>' +
+                            '<section><h5 class="mb-2 font-bold">班次與站間時間</h5>' +
+                                transitTable(['車次', '車種', '行駛方向', '上車站／時間', '下車站／時間', '備註'], trainRows) +
+                                (trains.length ? '<p class="mt-2 text-xs text-gray-500">最多顯示 40 筆；時間及車次依 TDX 官方回傳資料。</p>' : '<p class="mt-2 text-gray-500">' + escapeTransitHtml(data.note || '目前沒有班次資料。') + '</p>') +
+                            '</section>' +
+                            '<section><h5 class="mb-2 font-bold">票價</h5>' +
+                                transitTable(['區間', '票種代碼', '票價等級代碼', '車廂代碼', '票價'], fareRows) +
+                                '<p class="mt-2 text-xs text-gray-500">票價代碼依 TDX 官方資料呈現；實際適用票價與售票狀況請以臺鐵公告為準。</p>' +
+                            '</section>' +
+                            '<footer class="border-t pt-3 text-xs text-gray-600">資料來源：' +
+                                transitSourceLink(data.timetableSource || '', 'TDX 時刻表') + ' · ' +
+                                transitSourceLink(data.fareSource || '', 'TDX 票價') +
+                            '</footer>' +
+                        '</div>';
                 } else {
                     const route = data.route;
                     if (!route) {
-                        transitResult.textContent = (data.error || '沒有符合的路線。') +
-                            (data.matches?.length ? '\n可查路線：\n' + data.matches.map(item =>
-                                item.routeName + '（' + (item.departure || '起點未提供') + '→' + (item.destination || '終點未提供') + '）'
-                            ).join('\n') : '') +
-                            '\n資料來源：' + (data.routeSource || '');
+                        const matches = Array.isArray(data.matches) ? data.matches : [];
+                        transitResult.innerHTML =
+                            '<div class="space-y-3"><p class="font-semibold">' + escapeTransitHtml(data.error || '沒有符合的路線。') + '</p>' +
+                            (matches.length ? transitTable(['路線', '起站', '訖站'], matches.map(item => [item.routeName, item.departure, item.destination])) : '') +
+                            (data.routeSource ? '<p class="text-xs text-gray-600">資料來源：' + transitSourceLink(data.routeSource, 'TDX 公車資料') + '</p>' : '') +
+                            '</div>';
                     } else {
-                        transitResult.textContent = [
-                            '公車官方查詢｜' + data.city,
-                            '路線：' + route.name + '（' + (route.departure || '起點未提供') + '→' + (route.destination || '終點未提供') + '）',
-                            '',
-                            '停靠站序官方資料：',
-                            ...(data.stops || []).map(item => JSON.stringify(item)),
-                            '',
-                            '定期班表官方資料：',
-                            ...(data.schedules || []).map(item => JSON.stringify(item)),
-                            '',
-                            '路線來源：' + data.routeSource,
-                            '停靠站來源：' + data.stopsSource,
-                            '班表來源：' + data.scheduleSource
-                        ].join('\n');
+                        const stopRows = (Array.isArray(data.stops) ? data.stops : []).flatMap(direction =>
+                            (Array.isArray(direction.Stops) ? direction.Stops : []).map(stop => [
+                                direction.Direction ?? '',
+                                stop.StopSequence ?? '',
+                                transitLabel(stop.StopName),
+                                stop.StopID || stop.StopUID || ''
+                            ])
+                        );
+                        const scheduleRows = (Array.isArray(data.schedules) ? data.schedules : []).flatMap(schedule => {
+                            const direction = schedule.Direction ?? '';
+                            const timetables = Array.isArray(schedule.Timetables) ? schedule.Timetables : [];
+                            if (timetables.length) return timetables.map(item => [
+                                direction,
+                                item.TripID || '',
+                                item.StartTime || (item.StopTimes?.[0]?.DepartureTime || ''),
+                                item.EndTime || (item.StopTimes?.[item.StopTimes.length - 1]?.ArrivalTime || ''),
+                                item.ServiceDay ? JSON.stringify(item.ServiceDay) : ''
+                            ]);
+                            return [[direction, schedule.FirstBusTime || '', schedule.LastBusTime || '',
+                                schedule.PeakHeadwayMins || schedule.HeadwayPeakMinutes || '',
+                                schedule.OffPeakHeadwayMins || schedule.HeadwayOffPeakMinutes || '']];
+                        });
+                        transitResult.innerHTML =
+                            '<div class="space-y-5"><header><h4 class="text-lg font-bold text-forest">公車查詢結果</h4>' +
+                                '<p>' + escapeTransitHtml(data.city || '') + '｜路線 ' + escapeTransitHtml(route.name || '') + '</p>' +
+                                '<p>' + escapeTransitHtml(route.departure || '起點未提供') + ' → ' + escapeTransitHtml(route.destination || '終點未提供') + '</p></header>' +
+                            '<section><h5 class="mb-2 font-bold">停靠站序</h5>' +
+                                transitTable(['方向代碼', '站序', '站名', '站牌代碼'], stopRows) + '</section>' +
+                            '<section><h5 class="mb-2 font-bold">定期班表</h5>' +
+                                transitTable(['方向', '車次／首班時間', '首班／起始時間', '末班／結束時間', '班距／服務日'], scheduleRows) + '</section>' +
+                            '<footer class="border-t pt-3 text-xs text-gray-600">資料來源：' +
+                                transitSourceLink(data.routeSource || '', 'TDX 路線') + ' · ' +
+                                transitSourceLink(data.stopsSource || '', 'TDX 停靠站') + ' · ' +
+                                transitSourceLink(data.scheduleSource || '', 'TDX 班表') +
+                            '</footer></div>';
                     }
                 }
             } catch (error) {
