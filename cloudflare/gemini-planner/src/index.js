@@ -101,6 +101,22 @@ async function handleTransit(body, env, origin) {
     if (!env.TDX_CLIENT_ID || !env.TDX_CLIENT_SECRET) throw new Error("TDX_SECRETS_MISSING");
     const mode = typeof body.mode === "string" ? body.mode : "";
     const format = "$format=JSON";
+    if (mode === "stations") {
+      const stationQuery = new URLSearchParams({
+        "$select": "StationID,StationName",
+        "$top": "1000",
+        "$format": "JSON"
+      });
+      const stationData = await tdxGet("/v3/Rail/TRA/Station?" + stationQuery.toString(), env);
+      const stations = asArray(stationData)
+        .map(item => ({ id: item.StationID, name: stationLabel(item) }))
+        .filter(item => item.id && item.name);
+      return json({
+        mode: "stations",
+        stations,
+        source: "https://tdx.transportdata.tw/api-service/swagger/basic"
+      }, 200, origin);
+    }
     if (mode === "rail") {
       const from = typeof body.fromStation === "string" ? body.fromStation.trim() : "";
       const to = typeof body.toStation === "string" ? body.toStation.trim() : "";
