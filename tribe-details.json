@@ -1,6 +1,6 @@
 {
-  "title": "臺灣原住民族16族簡介",
-  "sourceTitle": "原住民族委員會原住民族16族簡介與各族資料",
+  "title": "臺灣原住民族17族簡介",
+  "sourceTitle": "原住民族委員會16族簡介與西拉雅族核定公告",
   "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/index.html?cumid=8F19BF08AE220D65",
   "checkedAt": "2026-11-09",
   "tribes": [
@@ -115,6 +115,16 @@
       "otherNames": "—",
       "introduction": "主要分布於高雄那瑪夏南梓仙溪流域。卡那卡那富族與鄒族、拉阿魯哇族曾長期被合稱，後因語言、歷史與文化差異而獲獨立族群認定。米貢祭Mikongu及河祭pasiakarai延續小米農作、家庭與河川生活的文化記憶。",
       "sourceUrl": "https://www.cip.gov.tw/zh-tw/tribe/grid-list/91A2A514F76BAEACD0636733C6861689/info.html?cumid=8F19BF08AE220D65"
+    },
+    {
+      "name": "西拉雅族",
+      "englishName": "Siraya",
+      "otherNames": "平埔原住民族群",
+      "statusNote": "行政院於2026年核定西拉雅族為平埔原住民族群；個人身分登記依主管機關公告辦理。",
+      "introduction": "西拉雅族以臺南為主要文化分布地，亦有社群分布於南部其他地區。公廨（kuwa）、阿立祖／阿立母信仰、牽曲與夜祭承載不同部落的歷史及文化傳承。吉貝耍、北頭洋、頭社、六重溪等社群各有自己的祭儀傳統；名稱、日期、流程與對外開放方式並不完全相同，不能以單一部落代表全族。",
+      "sourceUrl": "https://www.cip.gov.tw/zh-tw/news/data-list/E93DA6B5E2130657/C782A9E0C4FE437EB952F7A111CC4239-info.html",
+      "sourceLabel": "原民會：西拉雅族核定公告",
+      "cultureSourceUrl": "https://tmach-culture.tainan.gov.tw/page.asp?mainid=7D4D4EC8-F7E6-404F-82ED-BA468614C3FF"
     }
   ]
 }
