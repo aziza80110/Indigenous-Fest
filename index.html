@@ -823,10 +823,10 @@
         };
         const transitTable = (headers, rows) => {
             if (!rows.length) return '<p class="rounded-lg bg-white p-4 text-gray-500">官方資料目前沒有可顯示的項目。</p>';
-            return '<div class="overflow-x-auto rounded-lg border border-gray-200 bg-white"><table class="min-w-full divide-y divide-gray-200 text-left"><thead class="bg-gray-100"><tr>' +
-                headers.map(header => '<th scope="col" class="whitespace-nowrap px-3 py-2 font-semibold">' + escapeTransitHtml(header) + '</th>').join('') +
+            return '<div class="overflow-x-auto rounded-lg border border-gray-200 bg-white"><table class="w-max min-w-full divide-y divide-gray-200 text-left"><thead class="bg-gray-100"><tr>' +
+                headers.map(header => '<th scope="col" class="' + (header === '備註' ? 'min-w-[18rem] max-w-[28rem] whitespace-normal' : 'whitespace-nowrap') + ' px-3 py-2 font-semibold">' + escapeTransitHtml(header) + '</th>').join('') +
                 '</tr></thead><tbody class="divide-y divide-gray-100">' +
-                rows.map(row => '<tr class="odd:bg-white even:bg-stone-50">' + row.map(value => '<td class="px-3 py-2 align-top">' + escapeTransitHtml(value || '—') + '</td>').join('') + '</tr>').join('') +
+                rows.map(row => '<tr class="odd:bg-white even:bg-stone-50">' + row.map((value, index) => '<td class="' + (headers[index] === '備註' ? 'min-w-[18rem] max-w-[28rem] whitespace-normal break-words' : 'whitespace-nowrap') + ' px-3 py-2 align-top">' + escapeTransitHtml(value || '—') + '</td>').join('') + '</tr>').join('') +
                 '</tbody></table></div>';
         };
         const transitSourceLink = (url, label) =>
